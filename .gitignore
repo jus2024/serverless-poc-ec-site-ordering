@@ -1,0 +1,57 @@
+# 依存関係
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# テスト
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# ビルド
+/build
+
+# その他
+.DS_Store
+*.pem
+
+# デバッグ
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ローカル環境変数
+.env*.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Amplify
+.amplify
+amplify_outputs*
+amplifyconfiguration*
+
+# Python / エージェント
+agents/.venv/
+agents/__pycache__/
+agents/**/__pycache__/
+agents/*.egg-info/
+agents/.env
+*.pyc
+
+# AgentCore CLI
+agents/agentcore/.env.local
+agents/agentcore/deployed-state.json
+agents/agentcore/cdk/cdk.out/
+agents/agentcore/cdk/node_modules/
+
+# Notes (private)
+notes/
+
+# Legacy (Starter Toolkit)
+agents/.bedrock_agentcore.yaml
+agents/.bedrock_agentcore/

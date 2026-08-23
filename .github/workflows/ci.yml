@@ -1,0 +1,38 @@
+name: CI - Web App
+
+on:
+  push:
+    branches: [main, develop]
+    paths-ignore:
+      - "agents/**"
+      - "docs/**"
+      - ".kiro/**"
+      - "*.md"
+  pull_request:
+    branches: [main, develop]
+    paths-ignore:
+      - "agents/**"
+      - "docs/**"
+      - ".kiro/**"
+      - "*.md"
+
+jobs:
+  quality:
+    name: Lint & TypeCheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: 依存関係のインストール
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: 型チェック
+        run: npx tsc --noEmit
