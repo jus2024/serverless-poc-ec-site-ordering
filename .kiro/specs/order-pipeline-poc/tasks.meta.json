@@ -1,0 +1,664 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. 依存関係とテスト基盤の準備": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577754856
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577769756
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787578444937
+      }
+    ],
+    "2. 検証パラメータの解決と検証（`verification-config.ts`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577754891
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787578456618
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787579196125
+      }
+    ],
+    "3.1 `shared/types.ts` を design に整合させる": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577754924
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787579206549
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787579697037
+      }
+    ],
+    "3.2 `shared/catalog.ts` を確認し単体テストを書く": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577754956
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787579706616
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787581715846
+      }
+    ],
+    "3.3 `shared/load-curve.ts` を実装し単体テストを書く": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577754990
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787581720843
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787582287782
+      }
+    ],
+    "3.4 `shared/percentiles.ts` を実装し単体テストを書く": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755038
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787582292528
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787582507475
+      }
+    ],
+    "4. DynamoDB テーブル Construct（`order-tables.ts`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755063
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787582512785
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787583839608
+      }
+    ],
+    "5. Lambda 共通モジュール": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755090
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787583846464
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787586461685
+      }
+    ],
+    "6. 注文受付 Lambda（`order-accept`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755114
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787586466872
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787587091208
+      }
+    ],
+    "7. 段階完了の記録（`shared/order-status.ts` の書き直し）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755137
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787587095989
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787605640022
+      }
+    ],
+    "8. 注文照会 Lambda（`order-query`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755162
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787605645041
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787606868095
+      }
+    ],
+    "9. 初期在庫投入 Lambda（`inventory-seed`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755189
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787606873273
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787609895416
+      }
+    ],
+    "10. API Gateway とバックエンド配線（同期パスのみ）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755215
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787609900302
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787660056522
+      }
+    ],
+    "11. 後続処理 Lambda（`order-processor`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755243
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787660064533
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787664354367
+      }
+    ],
+    "12. Streams イベントソースマッピング（`order-stream.ts`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755271
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787664363748
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787665015846
+      }
+    ],
+    "13. 最小の end-to-end 動作確認（デプロイを伴う。要確認）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755296
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788008922892
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788010857181
+      }
+    ],
+    "14. 実処理時間 D の実測と design の更新": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755336
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788010862665
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788017937898
+      }
+    ],
+    "15.1 シャード数の取得": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755362
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787665243787
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787665883739
+      }
+    ],
+    "15.2 負荷生成ワーカー": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755389
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787665889070
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787667902213
+      }
+    ],
+    "16. 実行状態照会 Lambda（`execution-status`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755414
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787667907636
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787668476733
+      }
+    ],
+    "17. 負荷生成の到達レートの確認（デプロイを伴う。要確認）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755439
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788017984435
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788020819025
+      }
+    ],
+    "18. 並行計測 Lambda（`query-impact-measure`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755468
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787668488196
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787670298252
+      }
+    ],
+    "19.1 ダッシュボード": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755496
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787670303546
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787672729726
+      }
+    ],
+    "19.2 アラーム": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755521
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787672735186
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787673353858
+      }
+    ],
+    "20. API とバックエンドの配線を完成させる": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755547
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787673367807
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787695854773
+      }
+    ],
+    "21.1 `src/lib/orders/types.ts` と `api.ts`": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755572
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787695862677
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787696429814
+      }
+    ],
+    "21.2 `src/lib/orders/capacity.ts` と単体テスト": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755597
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787696435337
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787696845036
+      }
+    ],
+    "22.1 `OrderDashboard` とタブ構成": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755622
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787696851026
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787744750337
+      }
+    ],
+    "22.2 `OrderSubmitPanel` と `OrderStatusPanel`": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755654
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787744755854
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787746348366
+      }
+    ],
+    "22.3 `LoadTestPanel` と `QueryImpactPanel`": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755707
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787746354187
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787747385740
+      }
+    ],
+    "22.4 `MeasurementComparison` と `ConfigPanel`": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755735
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787747391601
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787750705146
+      }
+    ],
+    "22.5 トップページの差し替え": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755763
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787750710797
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787750903427
+      }
+    ],
+    "23. 全体の検証（コストなし）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755788
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787750912944
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787753890438
+      }
+    ],
+    "24. 軸 A のシナリオ実行（デプロイとコストを伴う。要確認）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755812
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788021715501
+      },
+      {
+        "executionId": "85d8a4ae-29e9-48ce-802a-ab5dead23904",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788067941103
+      }
+    ],
+    "25. 軸 B の事前確認（承認が必要）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755839
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788021096130
+      },
+      {
+        "executionId": "8c3e8fd9-3c8f-45bf-be0e-664cc44f6809",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788021662442
+      }
+    ],
+    "26. 軸 B のシナリオ実行（コストを伴う。承認後）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755864
+      },
+      {
+        "executionId": "85d8a4ae-29e9-48ce-802a-ab5dead23904",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1788069312084
+      }
+    ],
+    "27. ドキュメント": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787577755889
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787753898053
+      },
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787757648688
+      }
+    ],
+    "3. 共有型と商品マスタの整合（純粋関数）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787582507526
+      }
+    ],
+    "15. 負荷生成 Lambda（`load-generator`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787667902269
+      }
+    ],
+    "19. CloudWatch 監視（`order-monitoring.ts`）": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787673353892
+      }
+    ],
+    "21. フロントエンド: API クライアントと算術": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787696845076
+      }
+    ],
+    "22. フロントエンド: コンポーネント": [
+      {
+        "executionId": "a24eacb9-1eb7-46fe-82fd-3cc49cdf6b60",
+        "chatSessionId": "sess_b6431e9b-b930-4675-ac99-7ec1a9c3842b",
+        "timestamp": 1787750903488
+      }
+    ]
+  }
+}
