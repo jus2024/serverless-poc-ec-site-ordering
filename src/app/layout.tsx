@@ -6,8 +6,9 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "業務 Web アプリ",
-  description: "Amplify Gen 2 業務 Web アプリテンプレート",
+  title: "Kiro Roasters EC 注文処理システム",
+  description:
+    "DynamoDB Streams → Lambda → SQS の段階的アーキテクチャ進化を検証するサーバーレス PoC",
 };
 
 export default function RootLayout({

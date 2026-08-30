@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "vitest --run"
   },
   "dependencies": {
     "@ag-ui/client": "^0.0.55",
@@ -26,7 +27,17 @@
   "devDependencies": {
     "@aws-amplify/backend": "^1.21.1",
     "@aws-amplify/backend-cli": "^1.8.2",
+    "@aws-lambda-powertools/idempotency": "2.35.0",
+    "@aws-lambda-powertools/logger": "2.35.0",
+    "@aws-lambda-powertools/metrics": "2.35.0",
+    "@aws-lambda-powertools/tracer": "2.35.0",
+    "@aws-sdk/client-dynamodb": "3.1116.0",
+    "@aws-sdk/client-dynamodb-streams": "3.1116.0",
+    "@aws-sdk/client-lambda": "3.1116.0",
+    "@aws-sdk/lib-dynamodb": "3.1116.0",
+    "@aws-sdk/util-dynamodb": "3.996.9",
     "@eslint/eslintrc": "^3.3.5",
+    "@types/aws-lambda": "8.10.162",
     "@types/node": "^22.19.15",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -37,6 +48,8 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^15.5.14",
     "tsx": "^4.19.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "ulid": "3.0.2",
+    "vitest": "4.1.11"
   }
 }
