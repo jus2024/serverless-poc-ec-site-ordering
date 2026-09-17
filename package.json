@@ -1,7 +1,9 @@
 {
-  "name": "aws-amplify-gen2",
+  "name": "serverless-poc-ec-site-ordering",
   "version": "0.1.0",
   "private": true,
+  "description": "DynamoDB Streams 直結の非同期パイプラインの限界を実測する PoC（Amplify Gen 2 テンプレート上に構築）",
+  "license": "MIT-0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
