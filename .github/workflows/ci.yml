@@ -18,7 +18,7 @@ on:
 
 jobs:
   quality:
-    name: Lint & TypeCheck
+    name: Lint & TypeCheck & Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,3 +36,12 @@ jobs:
 
       - name: 型チェック
         run: npx tsc --noEmit
+
+      # amplify/ は独自の tsconfig（CDK 構成と Lambda コード）を持つため別に走らせる
+      - name: 型チェック（Amplify バックエンド）
+        run: npx tsc --noEmit -p amplify/tsconfig.json
+
+      # 合成テストはローカルの esbuild でアセットをバンドルするため、
+      # AWS への接続と認証情報は不要である
+      - name: 単体テスト
+        run: npm test

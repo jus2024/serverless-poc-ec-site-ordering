@@ -1,7 +1,165 @@
-# Amplify Gen 2 業務 Web アプリテンプレート
+# Amplify Gen 2 業務 Web アプリテンプレート + 注文処理パイプライン PoC
 
 AWS Amplify Gen 2 を中核にした業務 Web アプリケーション用のスターターテンプレートです。
 オプションで Strands Agents による AI エージェント機能を追加できます。
+
+このリポジトリにはテンプレートの上に、**DynamoDB Streams と Lambda を直結したときの
+限界を実測する PoC**（`order-pipeline-poc`）が載っています。次の節を参照してください。
+
+---
+
+## 注文処理パイプライン PoC
+
+架空のスペシャルティコーヒー焙煎メーカー Kiro Roasters の D2C EC を題材に、
+**バズで入力が 100 倍・1000 倍になったとき、Streams 直結構成のどこが壊れるのか**を
+絶対レートで実測します。
+
+### ⚠️ 公開環境に置かないでください
+
+**この PoC の API Gateway には認証が掛かっていません。** URL を知る第三者が
+注文投入も負荷生成も起動でき、コストを発生させられます。検証者自身の sandbox で動かし、
+使わない期間はスタックを削除してください。詳細と守るべき運用は
+[docs/poc/verification-guide.md](docs/poc/verification-guide.md) の冒頭にあります。
+
+### 中心的な問い
+
+1. DynamoDB Streams の発行側が限界になるのか
+2. Lambda の同時実行数が限界になるのか
+3. 限界は段階的・連鎖的に現れるのか
+
+事前分析の仮説は「壁は Lambda の同時実行枠ではなく**オープンシャード数 × 並列化係数**である」。
+Streams のオープンシャードはテーブルのパーティションと 1 対 1 で対応し、
+Lambda は 1 シャードを 1 インスタンスで処理します。
+
+```
+最大同時実行数 = オープンシャード数(S) × 並列化係数(P)
+消費能力       = S × P ÷ 1 レコードの処理時間(D)
+```
+
+**入力が 1000 倍になってもシャードは増えないため、消費能力は 1 倍のまま**という予測です。
+これを実測で検証・反証します。
+
+### 検証の 2 つの軸
+
+| 軸 | テーブルの状態 | 見に行く壁 |
+|----|-------------|-----------|
+| A | 既定のオンデマンドテーブル（S ≒ 4 と推定） | `S × P` の壁。滞留とデータロス |
+| B | 事前ウォームでシャードを増やしたテーブル | Lambda 同時実行枠の壁。同期パスへの巻き添え |
+
+同じバズが、テーブルの成熟度によって違う壊れ方をすることを示します。
+
+### 構成
+
+```
+ブラウザ (OrderDashboard: 注文 / 負荷テスト / 計測結果 / 設定)
+  → API Gateway (REST、認証なし)
+    ├─ 同期パス   : order-accept / order-query
+    ├─ 検証ツール : inventory-seed / load-generator / query-impact-measure / execution-status
+    └─ DynamoDB orders (Streams: NEW_AND_OLD_IMAGES)
+         → Streams ESM (filter: INSERT、PF 可変)
+           → order-processor (決済 → 引当 → 通知 → ポイント付与を直列実行)
+             → DLQ (SQS)
+```
+
+コードの置き場所:
+
+| パス | 内容 |
+|------|------|
+| `amplify/custom/` | IaC（テーブル、Lambda 定義、API、Streams ESM、ダッシュボード、アラーム） |
+| `amplify/functions/` | Lambda ハンドラと共有モジュール |
+| `src/components/orders/` | 検証操作 UI |
+| `src/lib/orders/` | API クライアントと消費能力・滞留の算術 |
+| `.kiro/specs/order-pipeline-poc/` | requirements / design / tasks |
+
+### セットアップ
+
+```bash
+npm ci
+
+# バックエンドをデプロイ（別ターミナル）
+npx ampx sandbox
+
+# 出力された API URL を .env.local に写す
+cp .env.example .env.local
+# NEXT_PUBLIC_ORDER_API_URL=<amplify_outputs.json の custom.orderApiUrl>
+
+# 開発サーバー（別ターミナル）
+npm run dev
+```
+
+`http://localhost:3000` が検証操作 UI です。続けて初期在庫を投入し、
+有効な検証パラメータを確認します。
+
+```bash
+export API=<custom.orderApiUrl>
+
+curl -X POST "$API/inventory/seed" -H 'Content-Type: application/json' -d '{}'
+curl -s "$API/config" | jq
+```
+
+`GET /config` の出典は `.env.local` ではなく**デプロイ済みの Lambda 環境変数**です。
+計測条件の取り違えを防ぐため、シナリオ実行の直前に必ず確認してください。
+
+### シナリオの実行
+
+```bash
+# 負荷生成の開始（202 が返り、投入は非同期に継続する）
+curl -X POST "$API/load-test/start" -H 'Content-Type: application/json' \
+  -d '{"ordersPerMinute": 1000, "durationSeconds": 900, "useRampCurve": false}'
+
+# 結果の照会（シャード数・実測投入レート・算出した消費能力を含む）
+curl -s "$API/executions/<executionId>" | jq
+```
+
+**設定の変え方は 2 系統あります。**
+
+| 系統 | 対象 | 反映方法 |
+|------|------|---------|
+| 環境変数 | 並列化係数 P、擬似処理時間 D、warm throughput、TTL、パラメータ上限 | `.env` を書き換えて **再デプロイ**（`npx ampx sandbox`） |
+| リクエストパラメータ | 投入レート、継続時間、負荷カーブ、並行計測の並行数・継続時間 | 再デプロイ**不要** |
+
+シナリオ別の設定値、シャード数の確認方法、warm throughput 引き上げの事前確認
+（**引き上げ後は下げられません**）、リソース削除手順は
+[docs/poc/verification-guide.md](docs/poc/verification-guide.md) にまとめています。
+
+### 検証状況
+
+**軸 A（A0〜A8）と軸 B（B0 / B1 / B2）を実行しました。** 軸 B は検証者の承認により
+B0〜B2 に限定しており、**B3 / B4 は実行できませんでした**（ウォーム write 100,000 が
+us-west-2 のクォータ上限を超え、引き上げ申請を行わない方針のため）。
+全記録は [docs/poc/verification-results.md](docs/poc/verification-results.md)、
+実行できなかった論点（B3 / B4 を要する Lambda 同時実行枠の壁の挙動）は
+[design.md §13](.kiro/specs/order-pipeline-poc/design.md) にまとめています。
+
+**仮説は成立しました。壁は `S × P ÷ D` であり、Lambda の同時実行枠ではありません。**
+事前ウォーム（write 40,000）でオープンシャードは 4 → 64 に増え、壁もそれに追随しました。
+S=4 で 42,814 件の滞留を積んだ 2,000 件/分 と同じ負荷が、S=64 では滞留ゼロまで消化されています。
+
+主な補正と想定外の発見:
+
+- **式は P について線形にスケールしません（設計が想定していなかった補正）。** P=10 の飽和能力は
+  式の値の約 0.84 倍（`ParallelizationFactor` 内のチェックポイント同期による損失）。
+  PF=10 の壁を見積もるときは `S × P ÷ D × 0.84` を使います。
+- **設計の式に誤りが見つかり訂正しました。** `IteratorAge = 滞留 ÷ 投入レート` であり、
+  `÷ 消費能力` ではありません。これに伴いデータロス猶予時間と回復時間の式を訂正し、
+  design §2.4 と `src/lib/orders/capacity.ts` を修正しています。
+- **出典要件が想定していなかった 2 点。** (1) 過負荷は請求額に現れません（コストは処理件数に比例し、
+  処理件数は能力で頭打ちになるため。過負荷を検知できるのは `IteratorAge` だけ）。
+  (2) 要件 15.1 の「投入 < 消費能力 なら 10 秒以内」という前提は壁の近傍では成立せず、
+  おおむね 投入 ≤ 能力 × 0.36 が必要でした。
+
+出典の要件定義から変更した点（シナリオ D / E の差し替え理由を含む）は同じドキュメントに
+記載済みです。
+
+### コスト
+
+事前見積もりは 軸 A 約 $2.7 + 軸 B 約 $18.3 でしたが、B3 / B4 を実行しなかったため実績は異なります。
+軸 B のシナリオコストは約 $1.3 で、これに write 40,000 への事前ウォームの一回限りの課金 $23.40 が
+加わります（この $23.40 は引き下げられませんが、テーブル削除でリセットされます）。
+Cost Explorer の実績値は反映待ち（24〜48 時間）です。予算枠は $100。
+検証していない期間は `npx ampx sandbox delete` でスタックを削除してください。
+
+---
 
 ## 技術スタック
 
@@ -22,12 +180,17 @@ AWS Amplify Gen 2 を中核にした業務 Web アプリケーション用のス
 src/                    # フロントエンド（Next.js App Router）
   app/api/copilotkit/   # CopilotKit Runtime API Route（SigV4 → AgentCore プロキシ）
   lib/agent/            # CopilotProvider（認証 + CopilotKit 接続）
+  lib/orders/           # PoC: API クライアントと消費能力・滞留の算術
   components/agent/     # AgentChatSection（CopilotChat UI）
+  components/orders/    # PoC: 検証操作 UI
 amplify/                # Amplify Gen 2 バックエンド定義
+  custom/               # PoC: IaC（テーブル、Lambda、API、Streams、監視）
+  functions/            # PoC: Lambda ハンドラと共有モジュール
 agents/                 # エージェント（任意、AgentCore CLI 管理）
   agentcore/            # AgentCore CLI 設定
   app/                  # エージェントコード
 docs/                   # 詳細ドキュメント
+  poc/                  # PoC の業務設定・出典要件・検証手順・実測結果
 .kiro/                  # Kiro ワークスペース設定
 .github/                # CI/CD
 ```
@@ -226,3 +389,7 @@ npx ampx sandbox delete
 | [docs/kiro-usage.md](docs/kiro-usage.md) | Kiro の steering/skills の使い方 |
 | [docs/sample/](docs/sample/) | サンプルページの仕組み |
 | [agents/README.md](agents/README.md) | エージェント開発の詳細 |
+| [docs/poc/verification-guide.md](docs/poc/verification-guide.md) | PoC の検証手順書（シナリオ実行、シャード数確認、warm throughput の事前確認、お片付け） |
+| [docs/poc/verification-results.md](docs/poc/verification-results.md) | PoC の実測結果と出典からの変更点 |
+| [docs/poc/kiro-roasters-background.md](docs/poc/kiro-roasters-background.md) | 架空企業 Kiro Roasters の業務設定・命名規則 |
+| [docs/poc/phase2-streams-requirements.md](docs/poc/phase2-streams-requirements.md) | PoC の出典となった要件定義 |

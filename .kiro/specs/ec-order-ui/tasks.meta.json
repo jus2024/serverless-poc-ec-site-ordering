@@ -1,0 +1,437 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 `amplify/functions/shared/catalog.ts` の `CatalogProduct` に `origin` / `roast` / `size` を追加": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932133
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478943144
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479187882
+      }
+    ],
+    "1.2 `amplify/functions/shared/types.ts` の `CatalogProduct`（Lambda 側）に追加属性を反映": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932172
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479192272
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479312745
+      }
+    ],
+    "1.3 `amplify/functions/order-query/views.ts` の `buildCatalogResponse` が追加属性を返すようにする": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932207
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479319724
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479400911
+      }
+    ],
+    "1.4 `catalog.test.ts` に「追加属性が SKU と矛盾しない」検証を追加": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932252
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479410272
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479491131
+      }
+    ],
+    "1.5 sandbox で `GET /catalog` が追加属性を返すことを確認する（デプロイを伴う）": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932287
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479769347
+      }
+    ],
+    "2.1 `src/lib/orders/types.ts` の `CatalogProductView` に `origin` / `roast` / `size: string` を追加": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932320
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479774069
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479877913
+      }
+    ],
+    "3.1 `src/components/orders/cart.ts` を新設する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932349
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479882140
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789480430792
+      }
+    ],
+    "3.2 産地の一意集合を抽出する純粋関数を `cart.ts` または別モジュールに置く": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932377
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789480435111
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789480951808
+      }
+    ],
+    "3.3 `cart.test.ts` を書く": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932438
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789480956174
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481168959
+      }
+    ],
+    "4.1 `ProductCard` を作る": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932463
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481173449
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481768170
+      }
+    ],
+    "4.2 `ProductGrid` を作る": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932485
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481772698
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481957154
+      }
+    ],
+    "5.1 `CartPanel` を作る": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932509
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481961430
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482327202
+      }
+    ],
+    "5.2 注文の送信と結果表示を `CartPanel`（または親）に実装する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932533
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482331681
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482669204
+      }
+    ],
+    "6.1 `OrdersTabPanel` を再構成する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932583
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482675009
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482919836
+      }
+    ],
+    "7.1 `InventorySeedPanel` を切り出す": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932605
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482924590
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483055981
+      }
+    ],
+    "7.2 設定タブを `SettingsTabPanel`（`ConfigPanel` + `InventorySeedPanel`）にする": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932635
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483060875
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483194563
+      }
+    ],
+    "7.3 旧 `OrderSubmitPanel` を撤去する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932660
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483200225
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483366295
+      }
+    ],
+    "8.1 `src/app/globals.css` の `--max-width` を 960px → 1120px にする": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932683
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483371122
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483425484
+      }
+    ],
+    "8.2 `orders.module.css` にグリッド・カード・カートのスタイルを追加": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932717
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483430095
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483715770
+      }
+    ],
+    "9.1 `npm run lint` と `npx tsc --noEmit` を通す": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932747
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483720663
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483919775
+      }
+    ],
+    "9.2 `npm test`（カートと catalog の単体テスト）を通す": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932775
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483924477
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789484014028
+      }
+    ],
+    "9.3 sandbox で目視確認する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789478932803
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789484023399
+      },
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789484453589
+      }
+    ],
+    "1. バックエンド: 商品マスタに表示用属性を追加する": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479769388
+      }
+    ],
+    "2. フロント: 型を合わせる": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789479877944
+      }
+    ],
+    "3. フロント: カートの純粋関数を作る（UI より先にテストを通す）": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481169002
+      }
+    ],
+    "4. フロント: 商品グリッドを作る": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789481957198
+      }
+    ],
+    "5. フロント: カート UI を作る": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482669239
+      }
+    ],
+    "6. フロント: 注文タブを差し替える": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789482919887
+      }
+    ],
+    "7. フロント: 検証操作を設定タブへ移す": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483366346
+      }
+    ],
+    "8. スタイルとレイアウト": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789483715826
+      }
+    ],
+    "9. 仕上げの検証": [
+      {
+        "executionId": "28ae667e-fc66-464e-a328-0095f7856f9d",
+        "chatSessionId": "sess_c12f626d-f9aa-474b-8337-4dbf3b9700fd",
+        "timestamp": 1789484453638
+      }
+    ]
+  }
+}

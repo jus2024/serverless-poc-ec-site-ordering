@@ -1,0 +1,826 @@
+/**
+ * 検証ダッシュボードのレイアウト。
+ *
+ * 色は `src/app/globals.css` のカラートークン（CSS 変数）だけを参照し、
+ * 生の色値は書かない（要件 14.8）。カード・ボタン・表などの見た目は
+ * 同ファイルのコンポーネントトークン（`card` / `btn-primary` / `data-table` 等）を使う。
+ */
+
+.dashboard {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+/* ── ヘッダー ───────────────────────────────────── */
+
+.header {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ── タブ ──────────────────────────────────────── */
+
+.tablist {
+  display: flex;
+  gap: 0.25rem;
+  margin-top: 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.tab,
+.tabActive {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius) var(--radius) 0 0;
+  padding: 0.6rem 1rem;
+  margin-bottom: -1px;
+  font-family: inherit;
+  font-size: 0.925rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.tab:hover {
+  color: var(--color-brand);
+  background: var(--color-brand-light);
+}
+
+.tabActive {
+  color: var(--color-brand);
+  border-bottom-color: var(--color-brand);
+}
+
+/* focus リングはトークンの色で描く。outline を消さない（キーボード操作のため） */
+.tab:focus-visible,
+.tabActive:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: -2px;
+}
+
+/* ── タブパネル ─────────────────────────────────── */
+
+.panel {
+  padding-top: 1.5rem;
+}
+
+/* パネルは focus 可能にしているため、focus リングを明示する */
+.panel:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 4px;
+}
+
+/*
+ * `.panel` に display を与えた場合でも hidden 属性が勝つようにする。
+ * 非アクティブなパネルはマウントしたまま hidden で隠している。
+ */
+.panel[hidden] {
+  display: none;
+}
+
+/* ── パネル共通 ────────────────────────────────── */
+
+/* 1 タブに複数のカードを積む */
+.panelStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── 注文タブの 2 カラム（左：商品グリッド / 右：カート＋注文照会）───── */
+
+/*
+ * 左を可変・右を固定幅の 2 カラム。左に商品グリッド、右にカートと注文照会を
+ * 置く。gap は `.panelStack`（縦積み時の間隔）と揃えて 1.5rem。
+ *
+ * 右カラム 22rem の根拠: カート明細の 1 行の必要幅は約 34.5rem（`.cartLine` の
+ * コメント）だが、`.cartLine` は `flex-wrap` で折り返す設計なので、22rem でも
+ * 商品名の行と 数量/小計/削除 の行が段組みになって収まる。カード padding
+ * （20px×2）を引くと中身は約 19.5rem 使え、`.cartLineMain`（`flex: 1 1 16rem`）が
+ * 1 行を取り、数量以降が次の行に落ちる。注文照会の dl（`.summaryGrid` は
+ * minmax(11rem, 1fr)）も 1 列で並ぶだけなので破綻しない。
+ *
+ * メディアクエリを使う理由: 商品グリッド（`.productGrid`）は列数の可変
+ * （auto-fill）で幅に追従できるが、「2 カラム ↔ 1 カラム」の切り替えは
+ * レイアウトの段数そのものが変わるため auto-fill では表現できない。ここだけは
+ * 明示的な閾値で切り替える。
+ */
+.ordersLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 22rem;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/*
+ * 右カラム。カートと注文照会を縦に積み、スクロールで追従させる。
+ * `align-self: start`（親の `align-items: start` と同義だが sticky の
+ * 追従対象を明示するため残す）で、左カラムが高いときに右カラムが
+ * 引き伸ばされない（伸びると sticky が効かない）。
+ *
+ * `top` はタブパネル上端から少し余白を取った値。画面より右ペインが高く
+ * なるケース（注文照会の表が伸びる）でも、素直な sticky なら下端まで
+ * スクロールすれば全部見える（`max-height` + `overflow` で内側スクロールに
+ * すると表が二重スクロールになり読みにくいので付けない）。
+ */
+.ordersRail {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
+
+/*
+ * 狭幅（タブレット以下）では 1 カラム（縦積み）に戻し、sticky も解く。
+ *
+ * 閾値 900px の根拠: `--max-width` は 1360px、`.dashboard` の左右 padding
+ * （1rem×2 = 32px）を引くと内容幅は約 1328px。2 カラム時は右 22rem（352px）と
+ * gap 1.5rem（24px）を除いた約 952px が左の商品グリッドに残り、11.5rem 下限の
+ * カードが約 4 列並ぶ。900px を下回ると右 352px を引いた左が約 500px 台になり、
+ * 商品グリッドが 2 列に痩せて 2 カラムの利点が薄れるため、この辺りで縦積みに
+ * 戻す（切替点の考え方は幅に依らず同じなので閾値 900px 自体は据え置く）。
+ * 内容幅はダッシュボード幅（`--max-width`）と `.dashboard` padding に依存
+ * するので、それらを変えたらここも見直す。
+ */
+@media (max-width: 900px) {
+  .ordersLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .ordersRail {
+    position: static;
+  }
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.375rem;
+}
+
+.subTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.sectionDescription {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* 非同期の状態を伝える 1 行（aria-live）。空でも高さを保ち、行の増減で表がずれないようにする */
+.statusLine {
+  min-height: 1.5rem;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+/* 結果表示のまとまり（`card` の中で使う従属ブロック） */
+.subCard {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+}
+
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  word-break: break-all;
+}
+
+/* 読み上げ専用。視覚的には隠すが支援技術には残す */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── フォーム ──────────────────────────────────── */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.fieldLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.fieldHint {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
+/* 入力欄に紐づく指摘（aria-describedby で参照する） */
+.fieldError {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.textInput {
+  max-width: 24rem;
+}
+
+.qtyInput {
+  width: 6rem;
+}
+
+/* 投入レート・継続時間・並行数（桁数が読めるだけの幅） */
+.numberInput {
+  width: 10rem;
+}
+
+.select {
+  width: 100%;
+  max-width: 34rem;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+.legend {
+  padding: 0 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.inlineActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+/* ── 値の一覧（dl）───────────────────────────────── */
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 0.75rem 1rem;
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.summaryValue {
+  font-size: 0.9375rem;
+}
+
+/* ── 段階の進捗 ────────────────────────────────── */
+
+.progressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.progressLabel {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.progressTrack {
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-subtle);
+  overflow: hidden;
+}
+
+.progressBar,
+.progressBarFailed {
+  height: 100%;
+  border-radius: 9999px;
+}
+
+.progressBar {
+  background: var(--color-brand);
+}
+
+/* 打ち切られた注文は進捗が伸びないため、色でも区別する */
+.progressBarFailed {
+  background: var(--color-danger);
+}
+
+.stageDone {
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.stageFailed {
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.stageWaiting {
+  color: var(--color-text-muted);
+}
+
+/* ── 表 ───────────────────────────────────────── */
+
+/* 狭い画面で表がはみ出すときに横スクロールさせる */
+.tableWrap {
+  overflow-x: auto;
+}
+
+.tableCaption {
+  text-align: left;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  padding-bottom: 0.375rem;
+}
+
+/* ── 比較表（design §11.2）───────────────────────── */
+
+/*
+ * 列が多いため、セル内での折り返しを抑えて横スクロールに寄せる
+ * （`.tableWrap` が横スクロールを引き受ける）。各列の値が 1 行で読めるほうが
+ * 行をまたいだ比較がしやすい。
+ *
+ * 同じダッシュボード内の他の表（レイテンシ分布・段階進捗）に影響しないよう、
+ * この表だけに付けるクラスで閉じている。
+ */
+.comparisonTable td {
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+/* 行見出し（シナリオ名 + 実行 ID + 種別）。ここだけは折り返す */
+.rowHeader {
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  min-width: 14rem;
+}
+
+.rowLabel {
+  display: block;
+  font-weight: 600;
+}
+
+.rowId {
+  display: block;
+  color: var(--color-text-secondary);
+}
+
+.rowMeta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/*
+ * 実測投入レートが目標から乖離した行（要件 11.11）。
+ *
+ * 色だけに頼らず、セル内に `.cellWarning` の文字と「算術の可否」列の理由も出す。
+ * `globals.css` の `.data-table tr:nth-child(even)` に上書きされないよう、
+ * 偶数行の側を明示して詳細度を上げている。
+ */
+.comparisonTable tr.rowDeviated,
+.comparisonTable tr.rowDeviated:nth-child(even) {
+  background: var(--color-warning-bg);
+}
+
+/* 乖離警告の文字（値の隣に出す） */
+.cellWarning {
+  display: block;
+  margin-top: 0.125rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-warning);
+  white-space: normal;
+}
+
+/* 算出できない値・使えない行の理由 */
+.cellBlocked {
+  color: var(--color-text-muted);
+  white-space: normal;
+}
+
+/* ── 補足の注記（警告ではないもの）───────────────── */
+
+/*
+ * 前提が満たされていることの確認（実測シャード数など）。
+ * `warningNote` と違い注意を促さないため、既定の副文の色を使う。
+ */
+.infoNote {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+/* ── 課金の事前確認（負荷生成）───────────────────── */
+
+/*
+ * 開始前に投入件数を提示するブロック。
+ * 失敗（alert-error）とは違い「これから起きること」の提示なので、
+ * danger ではなく warning のトークンを使う。
+ */
+.costPreview {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-warning);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--color-warning-bg);
+}
+
+.costPreviewTitle {
+  font-weight: 700;
+  font-size: 0.9375rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ── 警告 ─────────────────────────────────────── */
+
+/* 本文中の短い注意書き（課金、シャード数の欠測） */
+.warningNote {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-warning);
+}
+
+/*
+ * 独立した警告ブロック（実測レートの乖離。要件 11.11）。
+ * 値の並びに埋めず、算出値が信用できないことを 1 つの塊で示す。
+ */
+.warningAlert {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-warning);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+  background: var(--color-warning-bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+/* ── 失敗の案内 ────────────────────────────────── */
+
+.alert {
+  margin-top: 1rem;
+}
+
+.alertTitle {
+  font-weight: 600;
+  color: var(--color-danger);
+}
+
+.alertMessage {
+  margin-top: 0.25rem;
+  color: var(--color-text);
+  /* api.ts の案内文はコード片を含むので、単語の途中で折り返す */
+  overflow-wrap: anywhere;
+}
+
+.alertHint {
+  margin-top: 0.375rem;
+  color: var(--color-text-secondary);
+}
+
+.alertReference {
+  margin-top: 0.375rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* ── 商品グリッド（要件 2.1 / 6.3）───────────────── */
+
+/*
+ * 列数は `auto-fill` + `minmax` で画面幅に追従させる（要件 6.3）。
+ * メディアクエリで段階的に列数を切り替える方式は採らない。ダッシュボードの
+ * 最大幅（`--max-width`）とタブの padding が変わるたびに閾値を直す必要があり、
+ * 幅の変更が 2 箇所に散る。
+ *
+ * 下限 11.5rem（184px）の根拠: 商品グリッドは注文タブの 2 カラム
+ * （`.ordersLayout`）の左カラムに入り、右カラム（22rem 固定）と gap 1.5rem を
+ * 除いた幅を使う。`--max-width` 1360px から `.dashboard` の左右 padding
+ * （1rem×2）を引いた約 1328px のうち、右 22rem（352px）と gap 24px を除いた
+ * 約 952px が左カラムに残る。商品グリッドはさらに `card` 相当の枠を持たず
+ * 直接並ぶため、この幅を gap 1rem 込みで割ると最大幅では約 4 列で並ぶ
+ * （floor((952 + 16) / (184 + 16)) = 4。5 列＝184×5 + 16×4 = 984px は 952px に
+ * 入らない）。幅が縮むと 4 → 3 → 2 → 1 列と落ち、900px 未満では
+ * `.ordersLayout` が 1 カラムに戻るので商品グリッドは全幅を使えるようになる
+ * （375px の画面でも 1 列で収まる）。
+ *
+ * 列下限を広げてさらに列を減らす案は採らない。カードの中身は商品名・属性 3 行・
+ * 価格・ボタンで縦に長く、1 列あたりを広げても縦の情報量は増えないため、
+ * 240 件の一覧としては 1 画面に入る件数が減るだけになる。
+ */
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+  gap: 1rem;
+  margin-top: 0.75rem;
+  list-style: none;
+  padding: 0;
+}
+
+/*
+ * `li` を `grid` にして、中の `.productCard` を行の高さいっぱいに伸ばす。
+ * `block` のままだとカードの高さが中身なりになり、同じ行のカードで
+ * 追加ボタンの縦位置が揃わない（`.productCard` の `margin-top: auto` は
+ * カード自身が行の高さを持っていないと効かない）。
+ */
+.productGridItem {
+  display: grid;
+}
+
+/* ── 商品カード（要件 2.2 / 2.3 / 6.2）───────────────── */
+
+/*
+ * `globals.css` の `card` を付けずに枠を自前で持つのは、240 件を並べるグリッドに対して
+ * `card` の padding（20px）が広すぎるためである。使うトークンは `card` と同じものに
+ * 揃えてある（`--color-surface` / `--color-border` / `--radius`）。
+ *
+ * `height: 100%` は `.productGridItem`（grid）の行の高さいっぱいに伸ばすための保険。
+ * これがあって初めて `.productPrice` の `margin-top: auto` が効き、同じ行の
+ * カードで価格と追加ボタンの縦位置が揃う。
+ */
+.productCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 0.875rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+/*
+ * 商品画像のプレースホルダ。背景と豆アイコンの色は `ProductCard` が
+ * `--product-thumb-bg` / `--product-thumb-fg` に CSS 変数参照を載せる
+ * （`product-visual.ts`。生の色値はどちらにも書かない）。
+ * 色は産地ごとに `globals.css` の `--color-origin-*`（茶系のみ→多色に散らした）
+ * を巡回させる。変数が載らなかった場合でも枠が崩れないよう既定値を置いている。
+ */
+.productThumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /*
+   * 4/3 は列下限 11.5rem（184px）で高さ約 138px になる。産地色の面がカードの
+   * 上半分を占めすぎず、豆アイコンが潰れない比率としてこれを採る。
+   */
+  aspect-ratio: 4 / 3;
+  /* 産地色は淡いトークンもあるため、カード地との境目を薄い枠で残す */
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--product-thumb-bg, var(--color-surface-alt));
+  color: var(--product-thumb-fg, var(--color-brand));
+}
+
+.productThumbIcon {
+  width: 44%;
+  height: auto;
+}
+
+/* 豆の本体。色は `.productThumb` の color を継ぐ */
+.productThumbBean {
+  fill: currentColor;
+}
+
+/* 豆の中央の筋。背景色で抜いて豆に見せる */
+.productThumbCrease {
+  stroke: var(--product-thumb-bg, var(--color-surface-alt));
+}
+
+/*
+ * 商品名は「産地 + 焙煎度 + 容量」の連結なので、列下限 11.5rem 前後では 2〜3 行になる。
+ * 短い名前でも 2 行分の高さを確保して、隣のカードと属性表の開始位置を揃える
+ * （3 行の名前は伸びるが、価格と追加ボタンは `margin-top: auto` で揃う）。
+ */
+.productName {
+  min-height: 2.625rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.productAttrs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  font-size: 0.8125rem;
+}
+
+/* ラベルと値を 1 行に並べる（ラベル幅を固定して値の頭を揃える） */
+.productAttr {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* ラベルは最長で「焙煎度」の 3 文字。3rem で足り、残りを産地名の折り返しに回す */
+.productAttrLabel {
+  flex: 0 0 3rem;
+  color: var(--color-text-muted);
+}
+
+.productAttrValue {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--color-text-secondary);
+}
+
+/*
+ * 価格は 1 枚のカードの中で最も強い情報にする。
+ * `margin-top: auto` で下端側に寄せ、行内のカードで価格と追加ボタンの高さを揃える。
+ * `tabular-nums` は桁幅を固定して、隣のカードと桁位置が揺れないようにする。
+ */
+.productPrice {
+  margin-top: auto;
+  padding-top: 0.25rem;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.productPriceNote {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+/* カード幅いっぱいの追加ボタン（見た目は globals.css の btn-primary） */
+.productAddButton {
+  width: 100%;
+}
+
+/* ── カート（要件 3.3 / 3.4 / 3.5 / 6.4）───────────────── */
+
+/*
+ * 明細は 1 行に「商品名 + 単価 / 数量 / 小計 / 削除」を並べ、狭い画面では
+ * `flex-wrap` で折り返す。表（`data-table`）にしないのは、各行に入力欄と
+ * ボタンが入るためで、セル内に操作を詰めると狭い画面で横スクロールが
+ * 必要になり、キーボード操作の見通しも悪くなる。
+ *
+ * 明細は商品グリッドと違って件数が少なく（カートに入れた種類の数だけ）、
+ * 1 行の高さで読ませたいので、グリッドの gap（1rem）より詰める。
+ */
+.cart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  list-style: none;
+  padding: 0;
+}
+
+/*
+ * 1 行の必要幅は 商品名 16rem + 数量 6rem + 小計 6rem + 削除ボタン 約 4rem と
+ * gap 3 つ（0.75rem×3）で約 34.5rem（552px）。`card` の中（最大幅で約 1048px）では
+ * 1 行に収まり、タブレット以下では `flex-wrap` で数量以降が次の行に落ちる。
+ */
+.cartLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius);
+  background: var(--color-surface-alt);
+}
+
+/* 商品名と単価。残り幅を取り、狭い画面では単独の行になる */
+.cartLineMain {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+
+.cartLineName {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.cartLineUnit {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.cartLineUnitNote {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* 数量の入力欄（幅は `.qtyInput`）。ラベルの分だけ縦に積む */
+.cartLineQty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 0 0 auto;
+}
+
+/*
+ * 小計は行の中で最も強い数値にする。行をまたいで桁を比べるので右寄せ + 桁幅固定。
+ * 数量入力（`.qtyInput` は 6rem）と同じ幅を取り、入力欄の右端と小計の右端を揃える。
+ */
+.cartLineSubtotal {
+  flex: 0 0 6rem;
+  text-align: right;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartLineAction {
+  flex: 0 0 auto;
+}
+
+/* 数量の指摘は行全体の幅で出す（入力欄の幅では文が収まらない） */
+.cartLineIssue {
+  flex: 1 1 100%;
+}
