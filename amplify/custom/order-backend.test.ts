@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { describe, expect, it } from 'vitest';
 import { ORDER_API_BASE_URL_ENV } from '../functions/query-impact-measure/query-target.js';
 import { OrderAlarms } from './order-alarms.js';
@@ -51,7 +52,11 @@ function synthBackend() {
     tables,
     config: CONFIG,
   });
-  const api = new OrderApi(stack, 'OrderApi', { handlers: functions });
+  // 方式 A: `backend.ts` は `backend.auth.resources.userPool` を渡して
+  // 全ルートに Cognito 認証を掛ける。ここでは同一スタックの User Pool を代役にする
+  // （認証追加で参照グラフに循環が生まれないことも併せて検査する）
+  const userPool = new UserPool(stack, 'UserPool');
+  const api = new OrderApi(stack, 'OrderApi', { handlers: functions, userPool });
   functions.wireApiBaseUrl(api);
 
   const stream = new OrderStream(stack, 'OrderStream', {

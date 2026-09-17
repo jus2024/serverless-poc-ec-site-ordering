@@ -14,10 +14,21 @@ AWS Amplify Gen 2 を中核にした業務 Web アプリケーション用のス
 **バズで入力が 100 倍・1000 倍になったとき、Streams 直結構成のどこが壊れるのか**を
 絶対レートで実測します。
 
-### ⚠️ 公開環境に置かないでください
+### 認証について（方式 A: Cognito User Pool）
 
-**この PoC の API Gateway には認証が掛かっていません。** URL を知る第三者が
-注文投入も負荷生成も起動でき、コストを発生させられます。検証者自身の sandbox で動かし、
+**この PoC の API Gateway には Cognito User Pool 認証が掛かっています。** 全ルート
+（CORS プリフライトの OPTIONS を除く）に Cognito オーソライザーが付き、
+`Authorization: Bearer <ID トークン>` が無いリクエストは 401 になります。
+フロントエンド（`OrderDashboard`）は `<Authenticator>` 配下でログイン済みのため、
+API クライアントが ID トークンを自動で付けます。curl から叩く場合は
+[docs/poc/verification-guide.md](docs/poc/verification-guide.md) の手順で
+ID トークンを取得してください。
+
+> **既知の制約:** 認証追加により、`query-impact-measure` の内部呼び出し
+> （自分の `GET /orders` を叩く並行計測）は 401 になり、**measure
+> （`POST /measure/start`）は現在使用できません**。復旧には Lambda 側での
+> M2M トークン取得が必要です（方式 A で許容した制約）。
+
 使わない期間はスタックを削除してください。詳細と守るべき運用は
 [docs/poc/verification-guide.md](docs/poc/verification-guide.md) の冒頭にあります。
 
@@ -52,7 +63,7 @@ Lambda は 1 シャードを 1 インスタンスで処理します。
 
 ```
 ブラウザ (OrderDashboard: 注文 / 負荷テスト / 計測結果 / 設定)
-  → API Gateway (REST、認証なし)
+  → API Gateway (REST、Cognito User Pool 認証)
     ├─ 同期パス   : order-accept / order-query
     ├─ 検証ツール : inventory-seed / load-generator / query-impact-measure / execution-status
     └─ DynamoDB orders (Streams: NEW_AND_OLD_IMAGES)

@@ -1,32 +1,44 @@
 import { Stack } from 'aws-cdk-lib';
 import {
   AuthorizationType,
+  CognitoUserPoolsAuthorizer,
   Cors,
   EndpointType,
   LambdaIntegration,
   RestApi,
   type IResource,
 } from 'aws-cdk-lib/aws-apigateway';
+import type { IUserPool } from 'aws-cdk-lib/aws-cognito';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 /**
  * API Gateway REST API とルート定義（design §5.8）。
  *
- * ## 認証を掛けていない（design §8）
+ * ## Cognito User Pool 認証を掛ける（方式 A）
  *
- * **この API には認証がない。** 要件のスコープ外定義に従った結果であり、
- * 設計上の割り切りとして design §8 に明記されている。次のリスクを伴う。
+ * `userPool` を渡すと、全ルート（OPTIONS プリフライトを除く）に
+ * Cognito User Pool オーソライザーを掛ける。API Gateway は既定で
+ * **ID トークン**を検証するため、フロントエンドは `Authorization: Bearer <idToken>`
+ * を付けて呼ぶ（`src/lib/orders/api.ts` が `fetchAuthSession()` で ID トークンを取得する）。
+ * これにより、この PoC を Amplify Hosting にデプロイしても無認証で叩かれない。
  *
- * - URL を知る第三者が注文を投入でき、初期在庫投入も叩ける
- * - 負荷生成 API（`POST /load-test/start`）を第三者が叩けるため、Lambda の
- *   同時実行枠と DynamoDB の書き込み（= 課金）を消費させられる
+ * CORS プリフライト（OPTIONS）には認証を掛けない。ブラウザはプリフライトに
+ * `Authorization` ヘッダーを付けないため、ここを認証必須にすると全 CORS
+ * リクエストが失敗する。`defaultCorsPreflightOptions` が生成する OPTIONS は
+ * MOCK 統合で認証なしのまま残す（`order-api.test.ts` が検査する）。
  *
- * 緩和策は「負荷生成のパラメータに上限を設ける」（`verification-config.ts`）と
- * 「検証していない期間はスタックを削除しておく運用」だけである。
- * **この構成を公開環境に常設してはならない。**
- * 認証を足す場合は `defaultMethodOptions` に `authorizationType` を設定する
- * （API キー / IAM 認証 / WAF はいずれも本 Spec のスコープ外）。
+ * ### 既知の制約: measure の内部呼び出しが一時的に使用不可
+ *
+ * `query-impact-measure` は自分が属する API の `GET /orders` を HTTPS で叩く
+ * （design 論点 3）。認証を掛けたことで、この内部呼び出しは現在 401 になり、
+ * **measure（`POST /measure/start`）は一時的に使用できない**。復旧には
+ * Lambda 側でのトークン取得（M2M。例: Cognito のクライアントクレデンシャル）が
+ * 必要である（方式 A で許容した制約。`query-impact-measure/query-target.ts` の注記も参照）。
+ *
+ * `userPool` を省略した場合（テストやローカルの合成）は従来どおり
+ * `AuthorizationType.NONE` にフォールバックする。ただし `backend.ts` からは
+ * 必ず `userPool` を渡すこと。
  *
  * ## design §5.8 の 9 ルートすべてを定義する
  *
@@ -95,7 +107,9 @@ export const ORDER_API_ROUTES: readonly OrderApiRoute[] = [
 export const ORDER_API_CORS = {
   allowOrigins: Cors.ALL_ORIGINS,
   allowMethods: ['GET', 'POST', 'OPTIONS'],
-  allowHeaders: ['Content-Type'],
+  // `Authorization` は Cognito 認証（方式 A）で全リクエストに付くため許可する。
+  // `shared/http.ts` の `CORS_HEADERS` と揃える（`order-api.test.ts` が突き合わせる）
+  allowHeaders: ['Content-Type', 'Authorization'],
 } as const;
 
 /**
@@ -109,6 +123,15 @@ export const ORDER_API_STAGE_NAME = 'poc';
 
 export interface OrderApiProps {
   readonly handlers: OrderApiHandlers;
+
+  /**
+   * Cognito User Pool。指定すると全ルート（OPTIONS を除く）に
+   * Cognito User Pool オーソライザーを掛ける（方式 A）。
+   *
+   * 省略した場合は `AuthorizationType.NONE`（認証なし）にフォールバックする。
+   * テストやローカルの合成では省略してよいが、`backend.ts` からは必ず渡すこと。
+   */
+  readonly userPool?: IUserPool;
 
   /**
    * ステージ名。API のベース URL に含まれる。
@@ -130,8 +153,20 @@ export class OrderApi extends Construct {
 
     this.stageName = props.stageName ?? ORDER_API_STAGE_NAME;
 
+    // Cognito オーソライザーは userPool が渡されたときだけ作る。
+    // 省略時（テスト・ローカル合成）は authorizationType = NONE にフォールバックする
+    const authorizer =
+      props.userPool === undefined
+        ? undefined
+        : new CognitoUserPoolsAuthorizer(this, 'CognitoAuthorizer', {
+            cognitoUserPools: [props.userPool],
+          });
+
     this.api = new RestApi(this, 'RestApi', {
-      description: '注文処理パイプライン PoC の検証用 API（認証なし。design §8）',
+      description:
+        authorizer === undefined
+          ? '注文処理パイプライン PoC の検証用 API（認証なし。テスト/ローカル合成用のフォールバック）'
+          : '注文処理パイプライン PoC の検証用 API（Cognito User Pool 認証。方式 A）',
       // EDGE（既定）は CloudFront 経由になり、往復に CloudFront 側の遅延と
       // 揺らぎが乗る。本 PoC は同期パスのレイテンシ分位点を測って
       // 波及の有無を判定する（要件 12）ため、測りたい対象以外の要素を挟まない
@@ -152,10 +187,20 @@ export class OrderApi extends Construct {
         allowMethods: [...ORDER_API_CORS.allowMethods],
         allowHeaders: [...ORDER_API_CORS.allowHeaders],
       },
-      defaultMethodOptions: {
-        // 認証なし（design §8）。既定値だが、意図した状態であることを明示する
-        authorizationType: AuthorizationType.NONE,
-      },
+      // `defaultMethodOptions` は `addMethod` で足すルートにのみ適用される。
+      // `defaultCorsPreflightOptions` が生成する OPTIONS には波及しないため、
+      // プリフライトは認証なし（NONE）のまま残る（`order-api.test.ts` が検査）
+      defaultMethodOptions:
+        authorizer === undefined
+          ? {
+              // フォールバック: 認証なし
+              authorizationType: AuthorizationType.NONE,
+            }
+          : {
+              // 方式 A: 全ルートに Cognito User Pool 認証を掛ける
+              authorizationType: AuthorizationType.COGNITO,
+              authorizer,
+            },
     });
 
     // 統合はハンドラごとに 1 つ作って共有する。`order-query` は 4 ルートを

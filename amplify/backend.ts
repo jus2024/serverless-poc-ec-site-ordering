@@ -30,7 +30,23 @@ const config = getVerificationConfig();
 
 const tables = new OrderTables(orderStack, 'OrderTables', { config });
 const functions = new OrderFunctions(orderStack, 'OrderFunctions', { tables, config });
-const api = new OrderApi(orderStack, 'OrderApi', { handlers: functions });
+/**
+ * API に Cognito User Pool 認証を掛ける（方式 A）。
+ *
+ * `backend.auth.resources.userPool` は auth ネストスタックの User Pool。
+ * OrderPipelinePoc スタックからのクロススタック参照になるが、参照は
+ * OrderApi（オーソライザー）→ auth（User Pool）の一方向で、auth 側は
+ * OrderPipelinePoc を参照しないため循環しない（`order-backend.test.ts` /
+ * `order-api.test.ts` の合成で確認）。
+ *
+ * この認証追加により、`query-impact-measure` の内部呼び出し（自分の
+ * `GET /orders` を HTTPS で叩く）は 401 になり、measure は一時的に使用不可になる
+ * （方式 A で許容した既知の制約。`order-api.ts` の注記を参照）。
+ */
+const api = new OrderApi(orderStack, 'OrderApi', {
+  handlers: functions,
+  userPool: backend.auth.resources.userPool,
+});
 
 /**
  * 計測対象 API のベース URL を `query-impact-measure` へ渡す（design 論点 3）。

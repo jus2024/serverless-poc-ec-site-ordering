@@ -10,7 +10,15 @@
  * 同じ経路（API Gateway → Lambda → DynamoDB）を HTTPS で叩く。
  *
  * その代償として、この関数は**自分が属する API のベース URL を知る必要がある**。
- * IAM 権限は要らない（API に認証を掛けていない。design §5.9 / §8）。
+ *
+ * ## 認証追加（方式 A）により、この内部呼び出しは現在 401 になる（既知の制約）
+ *
+ * API に Cognito User Pool 認証を掛けた（`amplify/custom/order-api.ts`）。
+ * この内部呼び出しは Cognito の ID トークンを持たないため 401 になり、
+ * **measure（`POST /measure/start`）は一時的に使用できない**。復旧には
+ * Lambda 側での M2M トークン取得（例: Cognito のクライアントクレデンシャルフローで
+ * トークンを取り、`Authorization: Bearer` を付ける）が必要である。
+ * 方式 A で許容した制約であり、実処理（注文パイプライン）には影響しない。
  *
  * ## CDK 側の配線（`ORDER_API_BASE_URL`）は循環参照を避けてある
  *

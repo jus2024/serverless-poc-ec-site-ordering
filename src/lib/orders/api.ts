@@ -15,8 +15,18 @@
  * ## Lambda 側のモジュールを参照しない
  *
  * 型は `./types` にあり、`amplify/functions/shared/` からは import しない（要件 18.6）。
+ * `aws-amplify/auth` はフロントエンド専用モジュールなので import してよい。
+ *
+ * ## Cognito ID トークンを付ける（方式 A）
+ *
+ * API Gateway に Cognito User Pool 認証を掛けたため、全リクエストに
+ * `Authorization: Bearer <idToken>` を付ける。API Gateway の Cognito
+ * オーソライザーは既定で **ID トークン**を検証するため、accessToken ではなく
+ * idToken を使う。トークン取得は毎リクエスト時に `fetchAuthSession()` で行う
+ * （内部でキャッシュされ、期限管理も Amplify がやる）。
  */
 
+import { fetchAuthSession } from "aws-amplify/auth";
 import {
   type CatalogResponse,
   type CreateOrderRequest,
@@ -183,6 +193,51 @@ export function resolveOrderApiBaseUrl(): string {
   return trimmed;
 }
 
+// ─── 認証トークンの取得 ────────────────────────────────────────────
+
+/**
+ * Cognito ID トークンを返す関数の型。取得できなければ `null`。
+ *
+ * 差し替え可能にしているのは、`aws-amplify/auth` の `fetchAuthSession()` を
+ * 直に呼ぶと Amplify の設定（`Amplify.configure`）が要り、単体テスト環境で
+ * 例外になるためである。既定は `fetchIdTokenFromAmplify`。
+ */
+export type IdTokenProvider = () => Promise<string | null>;
+
+/**
+ * Amplify のセッションから ID トークンを取得する（既定の取得方法）。
+ *
+ * API Gateway の Cognito オーソライザーは既定で **ID トークン**を検証するため、
+ * `accessToken` ではなく `idToken` を使う。未ログインや取得失敗時は `null` を返す
+ * （アプリは `<Authenticator>` 配下で基本ログイン済みだが、防御的に扱う。
+ * トークンを付けずに送ると API Gateway が 401 を返し、`OrderApiError`(HTTP 401) になる）。
+ */
+export async function fetchIdTokenFromAmplify(): Promise<string | null> {
+  try {
+    const session = await fetchAuthSession();
+    return session.tokens?.idToken?.toString() ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * リクエストに使う ID トークンの取得方法。既定は Amplify セッションから取得する。
+ *
+ * テストや特殊な実行環境では `setIdTokenProvider` で差し替えられる。
+ */
+let idTokenProvider: IdTokenProvider = fetchIdTokenFromAmplify;
+
+/** ID トークンの取得方法を差し替える（主にテスト用）。 */
+export function setIdTokenProvider(provider: IdTokenProvider): void {
+  idTokenProvider = provider;
+}
+
+/** ID トークンの取得方法を既定（Amplify セッション）に戻す（主にテスト用）。 */
+export function resetIdTokenProvider(): void {
+  idTokenProvider = fetchIdTokenFromAmplify;
+}
+
 // ─── リクエストの組み立て ──────────────────────────────────────────
 
 /** 各クライアント関数に渡せる共通オプション */
@@ -249,9 +304,20 @@ async function requestJson<T>(spec: RequestSpec, options: OrderApiOptions = {}):
   if (options.signal !== undefined) {
     init.signal = options.signal;
   }
+
+  // Cognito ID トークンを付ける（方式 A）。取得できなければヘッダーを付けずに送り、
+  // API Gateway 側で 401 になる（未ログインは基本起こらないが防御的に扱う）
+  const headers: Record<string, string> = {};
   if (spec.body !== undefined) {
-    init.headers = { "Content-Type": "application/json" };
+    headers["Content-Type"] = "application/json";
     init.body = JSON.stringify(spec.body);
+  }
+  const idToken = await idTokenProvider();
+  if (idToken !== null) {
+    headers.Authorization = `Bearer ${idToken}`;
+  }
+  if (Object.keys(headers).length > 0) {
+    init.headers = headers;
   }
 
   let response: Response;
