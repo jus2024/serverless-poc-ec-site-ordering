@@ -29,6 +29,16 @@
  * 計測の実体は `query-impact-measure` Lambda であり、この画面は
  * 開始要求と結果表示だけを担う（要件 12.4。検証者の回線品質を
  * 測定結果に混ぜないため）。
+ *
+ * ## 現在の制約
+ *
+ * PoC API の全ルートに Cognito 認証を掛けた（方式A）ため、
+ * `query-impact-measure` Lambda が内部から `GET /orders` を呼ぶ経路が
+ * 401 になり、measure は一時的に使用できない。実行しても「完了」と
+ * 表示されるが、エラー率は 100%（成功 0 件）になり計測結果にはならない。
+ * この既知の制約を見た人が本物のバグを疑わないよう、パネル冒頭に常時の
+ * 注記を出している。復旧には Lambda 側での M2M トークン取得（方式B）が要る。
+ * 復旧後はこの注記を外すだけで戻る（開始ボタンは disabled にしていない）。
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -194,6 +204,20 @@ export default function QueryImpactPanel({ loadTestId = null }: QueryImpactPanel
         <code>GET /executions/{"{executionId}"}</code> を{" "}
         {EXECUTION_POLL_INTERVAL_MS / 1_000} 秒間隔で取得して表示する。
       </p>
+
+      <div className={styles.costPreview}>
+        <p className={styles.costPreviewTitle}>
+          この機能は現在使用できません（API 認証の追加による既知の制約）。
+        </p>
+        <p>
+          PoC API の全ルートに Cognito 認証を掛けたため、
+          <code>query-impact-measure</code> Lambda が内部で{" "}
+          <code>GET /orders</code> を呼ぶ経路が 401 になります。実行しても「完了」と
+          表示されますが、エラー率は 100%（成功 0 件・その他のエラーが全件）になり、
+          これは計測結果ではありません。復旧には Lambda 側での M2M トークン取得
+          （方式 B）が必要です。
+        </p>
+      </div>
 
       <p className={styles.statusLine} role="status" aria-live="polite">
         {configState === "loading"
