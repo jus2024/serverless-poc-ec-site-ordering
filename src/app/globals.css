@@ -21,7 +21,7 @@
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", "Roboto Mono",
     monospace;
-  --max-width: 960px;
+  --max-width: 1360px;
   --radius: 8px;
 
   /* === Brand Accent (Primary) — Roasted Bean === */
@@ -56,6 +56,27 @@
   --color-fanout: #2d8fa0;
   --color-fanout-bg: #f0fafb;
   --color-fanout-border: #1f7a8a;
+
+  /* === Product Origin Placeholder — 豆アイコンの産地色（装飾専用） ===
+     商品カードのプレースホルダを産地ごとに色分けする。従来は茶系 2 色
+     （--color-brand / --color-brand-secondary）だけで全部茶色に見えたため、
+     コーヒー産地を連想させる多色パレットに散らした。
+     各色は淡色（-bg：背景の面）と濃色（前景の豆アイコン）を組で使う。
+     セマンティックトークン（danger/success/warning/direct/fanout）は意味が
+     衝突するため流用せず、装飾専用として独立させている（product-visual.ts 参照）。
+     濃色は淡色の上でコントラストが出る組にしている。 */
+  --color-origin-coffee-bg: #f2e7de;
+  --color-origin-coffee: #6b4f3f;
+  --color-origin-forest-bg: #e4efe2;
+  --color-origin-forest: #3f6b4a;
+  --color-origin-cherry-bg: #f7e4e1;
+  --color-origin-cherry: #a83c34;
+  --color-origin-amber-bg: #f9ecd6;
+  --color-origin-amber: #b3760f;
+  --color-origin-teal-bg: #dcefef;
+  --color-origin-teal: #2c7a82;
+  --color-origin-plum-bg: #ece2ef;
+  --color-origin-plum: #6b4a7a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -95,6 +116,22 @@
     --color-fanout: #4db8c9;
     --color-fanout-bg: #1a2c2e;
     --color-fanout-border: #2d8fa0;
+
+    /* === Product Origin Placeholder（ダーク） ===
+       背景を暗い低彩度の面に、前景（豆アイコン）を明るめにして、
+       ダーク地でもコントラストが出るようにしている（ライトと同じトークン名）。 */
+    --color-origin-coffee-bg: #2a2320;
+    --color-origin-coffee: #c9a88e;
+    --color-origin-forest-bg: #1e2a20;
+    --color-origin-forest: #8fc79c;
+    --color-origin-cherry-bg: #2e1e1c;
+    --color-origin-cherry: #e08e86;
+    --color-origin-amber-bg: #2c2519;
+    --color-origin-amber: #e0b25a;
+    --color-origin-teal-bg: #1a2a2c;
+    --color-origin-teal: #6cc4cc;
+    --color-origin-plum-bg: #241f2a;
+    --color-origin-plum: #b593c4;
   }
 }
 

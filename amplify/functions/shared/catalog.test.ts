@@ -86,6 +86,105 @@ describe('CATALOG: 商品属性（要件 3.4）', () => {
   });
 });
 
+describe('CATALOG: 表示用属性（ec-order-ui 要件 1.1〜1.6）', () => {
+  /**
+   * SKU の産地部分（`{産地略}-{品種略}-{グレード}`）→ 表示名。
+   * 産地略コードは単独では一意でない（ETH が 2 件ある）ため、3 要素をキーにする。
+   */
+  const ORIGIN_NAME_BY_CODE: Record<string, string> = {
+    'ETH-YIRG-G1': 'エチオピア イルガチェフェ G1',
+    'ETH-SIDA-G2': 'エチオピア シダモ G2',
+    'BRA-SANT-NY2': 'ブラジル サントス NY2',
+    'BRA-CERR-SP': 'ブラジル セラード スペシャルティ',
+    'COL-SUPR-EP': 'コロンビア スプレモ EP',
+    'GTM-ANTI-SHB': 'グアテマラ アンティグア SHB',
+    'KEN-NYER-AA': 'ケニア ニエリ AA',
+    'IDN-MAND-G1': 'インドネシア マンデリン G1',
+    'CRI-TARR-SHB': 'コスタリカ タラス SHB',
+    'PAN-GESH-SP': 'パナマ ゲイシャ スペシャルティ',
+  };
+
+  /** SKU の焙煎度コード → 表示名 */
+  const ROAST_NAME_BY_CODE: Record<string, string> = {
+    LIGHT: 'ライト',
+    MEDIUM: 'ミディアム',
+    CITY: 'シティ',
+    FULLCITY: 'フルシティ',
+    FRENCH: 'フレンチ',
+    ITALIAN: 'イタリアン',
+  };
+
+  /** SKU の容量コード → 表示名 */
+  const SIZE_NAME_BY_CODE: Record<string, string> = {
+    '100G': '100g',
+    '200G': '200g',
+    '500G': '500g',
+    '1KG': '1kg',
+  };
+
+  it('全商品が origin / roast / size を持つ（要件 1.1）', () => {
+    for (const product of CATALOG) {
+      expect(product.origin).not.toBe('');
+      expect(product.roast).not.toBe('');
+      expect(product.size).not.toBe('');
+    }
+  });
+
+  it('roast / size は SKU の焙煎度・容量コードと矛盾しない（要件 1.3 / 1.4 / 1.5）', () => {
+    for (const product of CATALOG) {
+      const [, , , roastCode, sizeCode] = product.sku.split('#')[1].split('-');
+
+      expect(product.roast).toBe(ROAST_NAME_BY_CODE[roastCode]);
+      expect(product.size).toBe(SIZE_NAME_BY_CODE[sizeCode]);
+    }
+  });
+
+  it('origin は SKU の産地部分（産地略-品種略-グレード）と矛盾しない（要件 1.5）', () => {
+    for (const product of CATALOG) {
+      const [originCode, variety, grade] = product.sku.split('#')[1].split('-');
+      const originKey = `${originCode}-${variety}-${grade}`;
+
+      expect(ORIGIN_NAME_BY_CODE[originKey]).toBeDefined();
+      expect(product.origin).toBe(ORIGIN_NAME_BY_CODE[originKey]);
+    }
+  });
+
+  it('SKU の産地部分と origin 表示名は 1 対 1 に対応する（要件 1.5）', () => {
+    // 産地の入れ替わり（別産地の表示名が付く / 同じ表示名が複数の産地部分に付く）を検出する
+    const nameByKey = new Map<string, string>();
+    for (const product of CATALOG) {
+      const originKey = product.sku.split('#')[1].split('-').slice(0, 3).join('-');
+      nameByKey.set(originKey, product.origin);
+    }
+
+    expect(nameByKey.size).toBe(Object.keys(ORIGIN_NAME_BY_CODE).length);
+    expect(new Set(nameByKey.values()).size).toBe(nameByKey.size);
+  });
+
+  it('name は `origin roast size` の連結である（要件 1.2 / 1.6）', () => {
+    for (const product of CATALOG) {
+      expect(product.name).toBe(`${product.origin} ${product.roast} ${product.size}`);
+    }
+  });
+
+  it('origin は産地の一意集合が 10 種類になる（要件 1.2）', () => {
+    const origins = new Set(CATALOG.map((product) => product.origin));
+
+    expect(origins.size).toBe(10);
+    expect(origins.has('エチオピア イルガチェフェ G1')).toBe(true);
+  });
+
+  it('命名規則の例の商品が期待どおりの表示用属性を持つ（要件 1.2〜1.4）', () => {
+    const product = findProduct('ITEM#ETH-YIRG-G1-MEDIUM-200G');
+
+    expect(product).toMatchObject({
+      origin: 'エチオピア イルガチェフェ G1',
+      roast: 'ミディアム',
+      size: '200g',
+    });
+  });
+});
+
 describe('findProduct（要件 1.8 の判定に使う）', () => {
   it('商品マスタの全 SKU を引ける', () => {
     for (const product of CATALOG) {

@@ -346,11 +346,37 @@ describe('buildCatalogResponse（要件 3.5）', () => {
     expect(response.pointRate).toBe(POINT_RATE);
   });
 
-  it('SKU・商品名・単価だけを返す（Lambda 内部の構造を漏らさない）', () => {
+  it('SKU・商品名・単価と表示用属性だけを返す（Lambda 内部の構造を漏らさない）', () => {
     const [product] = buildCatalogResponse().products;
 
-    expect(Object.keys(product).sort()).toEqual(['name', 'price', 'sku']);
+    expect(Object.keys(product).sort()).toEqual([
+      'name',
+      'origin',
+      'price',
+      'roast',
+      'size',
+      'sku',
+    ]);
     expect(product.sku).toBe(CATALOG[0].sku);
     expect(product.price).toBe(CATALOG[0].price);
+  });
+
+  it('表示用属性を商品マスタの値そのままで返す（要件 1.1）', () => {
+    const { products } = buildCatalogResponse();
+
+    // 全件を見る。1 件だけの照合では map の取り違え（全商品に同じ値を入れる等）を見逃す
+    expect(
+      products.map((product) => ({
+        origin: product.origin,
+        roast: product.roast,
+        size: product.size,
+      }))
+    ).toEqual(
+      CATALOG.map((product) => ({
+        origin: product.origin,
+        roast: product.roast,
+        size: product.size,
+      }))
+    );
   });
 });

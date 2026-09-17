@@ -15,8 +15,22 @@ import {
 
 /** `GET /catalog` の応答を模した商品マスタ（単価の出典） */
 const PRODUCTS: CatalogProductView[] = [
-  { sku: "ITEM#ETH-YIRG-G1-MEDIUM-200G", name: "エチオピア イルガチェフェ 中煎り 200g", price: 1_800 },
-  { sku: "ITEM#COL-SUP-G1-DARK-500G", name: "コロンビア スプレモ 深煎り 500g", price: 3_600 },
+  {
+    sku: "ITEM#ETH-YIRG-G1-MEDIUM-200G",
+    name: "エチオピア イルガチェフェ 中煎り 200g",
+    price: 1_800,
+    origin: "エチオピア イルガチェフェ G1",
+    roast: "ミディアム",
+    size: "200g",
+  },
+  {
+    sku: "ITEM#COL-SUP-G1-DARK-500G",
+    name: "コロンビア スプレモ 深煎り 500g",
+    price: 3_600,
+    origin: "コロンビア スプレモ EP",
+    roast: "フレンチ",
+    size: "500g",
+  },
 ];
 
 describe("parseQtyInput", () => {

@@ -202,6 +202,15 @@ export function parseQtyInput(raw: string): ParsedField<number> {
  * 未入力は「未指定」として `undefined` を返す。API は `customerId` 未指定で
  * テスト顧客を割り当てる（要件 1.3）が、空文字を送ると 400 になる
  * （`order-request.ts` の `readOptionalId`）ため、空文字は送らない。
+ *
+ * ## 現在 UI からは呼ばれない（意図的に残している）
+ *
+ * 顧客 ID の入力欄は EC の購買導線化に伴って削除した（要件 4.7 / 5.4。
+ * `use-order-submit.ts` は `customerId` を送らず、API のテスト顧客の
+ * 自動割り当てに委ねる）。この関数は入力の検証だけを行う純粋関数で、
+ * 残しておく害が無く、ログイン顧客の ID を送る段階で再び必要になる。
+ * 参照が無いことを理由に消さないこと（design §3.2）。振る舞いは
+ * `order-form.test.ts` で固定してある。
  */
 export function parseCustomerIdInput(raw: string): ParsedField<string | undefined> {
   const trimmed = raw.trim();

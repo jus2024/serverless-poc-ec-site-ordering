@@ -8,10 +8,10 @@
  *
  * | タブ | 中身 |
  * |------|------|
- * | 注文 | `OrderSubmitPanel` / `OrderStatusPanel` |
+ * | 注文 | `OrdersTabPanel`（`ProductGrid` / `CartPanel` / `OrderStatusPanel`） |
  * | 負荷テスト | `LoadTestPanel` / `QueryImpactPanel` |
  * | 計測結果 | `MeasurementComparison` |
- * | 設定 | `ConfigPanel` |
+ * | 設定 | `SettingsTabPanel`（`ConfigPanel` / `InventorySeedPanel`） |
  *
  * ## 4 つのパネルを常にマウントしたままにしている理由
  *
@@ -32,12 +32,11 @@ import { useRef, useState } from "react";
 
 import BrandIcon from "@/src/components/common/BrandIcon";
 
-import ConfigPanel from "./ConfigPanel";
 import LoadTestPanel from "./LoadTestPanel";
 import MeasurementComparison from "./MeasurementComparison";
-import OrderStatusPanel from "./OrderStatusPanel";
-import OrderSubmitPanel from "./OrderSubmitPanel";
+import OrdersTabPanel from "./OrdersTabPanel";
 import QueryImpactPanel from "./QueryImpactPanel";
+import SettingsTabPanel from "./SettingsTabPanel";
 import { resolveTabIndex } from "./tab-navigation";
 import styles from "./orders.module.css";
 
@@ -162,27 +161,8 @@ function renderPanel(tabId: OrderDashboardTabId) {
     case "measurements":
       return <MeasurementComparison />;
     case "settings":
-      return <ConfigPanel />;
+      return <SettingsTabPanel />;
   }
-}
-
-/**
- * 「注文」タブ（投入 + 照会）。
- *
- * 投入した注文 ID を照会側へ渡すため、2 つのパネルの間にだけ必要な状態を
- * ここで持つ。外枠（`OrderDashboard`）にはパネル固有の状態を置かない。
- * ID は「最後に投入した注文」だけを持ち、履歴は持たない
- * （連続投入の観測は負荷テストのパネルと CloudWatch が担う）。
- */
-function OrdersTabPanel() {
-  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
-
-  return (
-    <div className={styles.panelStack}>
-      <OrderSubmitPanel onOrderCreated={setCreatedOrderId} />
-      <OrderStatusPanel trackedOrderId={createdOrderId} />
-    </div>
-  );
 }
 
 /**
@@ -192,7 +172,8 @@ function OrdersTabPanel() {
  * 「どの投入レートの最中に測ったのか」と対でなければ解釈できないため、
  * 実行レコードに `loadTestId` を残せるようにしている（要件 12.5）。
  *
- * `OrdersTabPanel` と同じで、2 つのパネルの間にだけ必要な状態をここに置く。
+ * 2 つのパネルの間にだけ必要な状態をここに置く。外枠（`OrderDashboard`）には
+ * パネル固有の状態を持たせない。
  */
 function LoadTestTabPanel() {
   const [trackedLoadTestId, setTrackedLoadTestId] = useState<string | null>(null);

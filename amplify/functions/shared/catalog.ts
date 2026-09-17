@@ -48,6 +48,14 @@ export interface CatalogProduct {
   name: string;
   /** 税込単価 */
   price: number;
+  // 以下は表示用の属性。SKU の構成要素（ORIGINS / ROASTS / SIZES）の表示名をそのまま持つ。
+  // 表示専用であり、SKU 形式・価格・注文処理には影響しない（要件 1.5 / 1.6）。
+  /** 産地の表示名（例: "エチオピア イルガチェフェ G1"） */
+  origin: string;
+  /** 焙煎度の表示名（例: "ミディアム"） */
+  roast: string;
+  /** 容量の表示名（例: "200g"） */
+  size: string;
 }
 
 /**
@@ -66,6 +74,9 @@ function buildCatalog(): CatalogProduct[] {
           sku,
           name: `${origin.name} ${roast.name} ${size.name}`,
           price,
+          origin: origin.name,
+          roast: roast.name,
+          size: size.name,
         });
       }
     }

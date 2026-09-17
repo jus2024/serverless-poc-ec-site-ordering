@@ -169,6 +169,14 @@ export interface CatalogProductView {
   name: string;
   /** 税込単価 */
   price: number;
+  // 以下は表示用の属性。SKU の構成要素の表示名をそのまま返す。
+  // 表示専用であり、SKU 形式・価格・注文処理には影響しない（要件 1.6）。
+  /** 産地の表示名（例: "エチオピア イルガチェフェ G1"。要件 1.2） */
+  origin: string;
+  /** 焙煎度の表示名（例: "ミディアム"。要件 1.3） */
+  roast: string;
+  /** 容量の表示名（例: "200g"。要件 1.4） */
+  size: string;
 }
 
 /**
