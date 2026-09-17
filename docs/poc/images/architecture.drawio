@@ -1,0 +1,162 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="ページ-1" id="ppTod_e-LUo_rGzSpr-_">
+    <mxGraphModel dx="1615" dy="901" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0" adaptiveColors="auto">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="browser" parent="1" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=11;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.user;" value="ブラウザ&#xa;OrderDashboard" vertex="1">
+          <mxGeometry height="60" width="60" x="41" y="365" as="geometry" />
+        </mxCell>
+        <mxCell id="awscloud" parent="1" style="sketch=0;outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=13;fontStyle=0;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_aws_cloud;strokeColor=#AAB7B8;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;fontColor=#5A6C74;dashed=0;" value="AWS Cloud (us-west-2)" vertex="1">
+          <mxGeometry height="900" width="1470" x="180" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="amplify" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.amplify;" value="Amplify Hosting&#xa;Next.js SSR / 購買・検証 UI" vertex="1">
+          <mxGeometry height="70" width="70" x="40" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="cognito" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#DD344C;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.cognito;" value="Cognito&#xa;User Pool / 認証" vertex="1">
+          <mxGeometry height="60" width="60" x="45" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="apigw" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;" value="API Gateway&#xa;REST / 全ルート Cognito 認証" vertex="1">
+          <mxGeometry height="70" width="70" x="230" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="syncGroup" parent="awscloud" style="rounded=1;html=1;fillColor=none;strokeColor=#3B6FB6;strokeWidth=2;verticalAlign=top;align=left;fontColor=#3B6FB6;fontStyle=1;fontSize=12;spacingLeft=8;spacingTop=6;dashed=0;" value="同期パス（受付・照会）" vertex="1">
+          <mxGeometry height="200" width="340" x="400" y="230" as="geometry" />
+        </mxCell>
+        <mxCell id="orderAccept" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="order-accept&#xa;POST /orders" vertex="1">
+          <mxGeometry height="60" width="60" x="440" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="orderQuery" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="order-query&#xa;GET /orders /config /catalog" vertex="1">
+          <mxGeometry height="60" width="60" x="620" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="toolGroup" parent="awscloud" style="rounded=1;html=1;fillColor=none;strokeColor=#D9832B;strokeWidth=2;verticalAlign=top;align=left;fontColor=#C4741F;fontStyle=1;fontSize=12;spacingLeft=8;spacingTop=6;dashed=0;arcSize=9;" value="検証ツール" vertex="1">
+          <mxGeometry height="330" width="340" x="400" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="inventorySeed" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="inventory-seed&#xa;POST /inventory/seed" vertex="1">
+          <mxGeometry height="56" width="56" x="435" y="540" as="geometry" />
+        </mxCell>
+        <mxCell id="loadGen" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="load-generator&#xa;POST /load-test/start" vertex="1">
+          <mxGeometry height="56" width="56" x="620" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="execStatus" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=9;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="execution-status&#xa;GET /executions/{id}" vertex="1">
+          <mxGeometry height="56" width="56" x="435" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="ordersTable" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#C925D1;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.dynamodb;" value="orders テーブル&#xa;DynamoDB（On-Demand）&#xa;Streams: NEW_AND_OLD_IMAGES" vertex="1">
+          <mxGeometry height="78" width="78" x="900" y="150" as="geometry" />
+        </mxCell>
+        <mxCell id="esm" parent="awscloud" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#999999;fontSize=10;fontColor=#232F3E;" value="Streams ESM&lt;br&gt;filter: INSERT" vertex="1">
+          <mxGeometry height="66" width="150" x="864" y="377" as="geometry" />
+        </mxCell>
+        <mxCell id="processor" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#ED7100;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" value="order-processor&lt;br&gt;決済→引当→通知→ポイント" vertex="1">
+          <mxGeometry height="78" width="78" x="1150" y="365" as="geometry" />
+        </mxCell>
+        <mxCell id="dlq" parent="awscloud" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=10;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;" value="DLQ&#xa;SQS（失敗した注文）" vertex="1">
+          <mxGeometry height="60" width="60" x="1160" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="title" parent="1" style="text;html=1;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;fontColor=#232F3E;" value="注文処理パイプライン PoC — AWS 構成図（DynamoDB Streams 直結・サーバーレス完結）" vertex="1">
+          <mxGeometry height="30" width="1050" x="400" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="e-req" edge="1" parent="1" source="browser" style="endArrow=classic;strokeColor=#B0084D;fontColor=#B0084D;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="apigw" value="Bearer トークン付き REST">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="70" y="313" />
+              <mxPoint x="445" y="313" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-host" edge="1" parent="1" source="amplify" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="browser" value="UI 配信">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-auth" edge="1" parent="1" style="endArrow=classic;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="cognito" value="ログイン→IDトークン">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+            <mxPoint x="255" y="461.22" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-authz" edge="1" parent="1" source="apigw" style="endArrow=classic;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="cognito" value="トークン検証">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="390" />
+              <mxPoint x="350" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-sync" edge="1" parent="1" source="apigw" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="syncGroup" value="GET /orders・受付">
+          <mxGeometry relative="1" x="-0.2877" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="550" y="390" />
+              <mxPoint x="550" y="436" />
+              <mxPoint x="750" y="436" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-tool" edge="1" parent="1" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="toolGroup" value="負荷・照会・投入">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="445" y="725" />
+            </Array>
+            <mxPoint x="445" y="459" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-accept-write" edge="1" parent="1" source="orderAccept" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" target="ordersTable" value="注文を書き込み">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="740" y="390" />
+              <mxPoint x="740" y="239.56" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-query-read" edge="1" parent="1" source="orderQuery" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="ordersTable" value="Query">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="830" y="259" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-seed" edge="1" parent="1" source="inventorySeed" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;entryPerimeter=0;" target="ordersTable" value="在庫投入">
+          <mxGeometry relative="1" x="-0.1821" as="geometry">
+            <mxPoint y="-1" as="offset" />
+            <Array as="points">
+              <mxPoint x="957.22" y="638" />
+              <mxPoint x="957.22" y="278.56" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-load" edge="1" parent="1" source="loadGen" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;entryPerimeter=0;" target="ordersTable" value="注文を大量投入（滞留を作る）">
+          <mxGeometry relative="1" x="-0.4677" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1021.78" y="768" />
+              <mxPoint x="1021.78" y="278.56" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-stream" edge="1" parent="1" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="esm" value="Streams">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1119" y="347.89" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-invoke" edge="1" parent="1" source="esm" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="processor" value="起動">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1262" y="480" />
+              <mxPoint x="1262" y="474" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-update" edge="1" parent="1" source="processor" style="endArrow=classic;dashed=1;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="ordersTable" value="段階ごとに更新（INSERT のみ消費）">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1369" y="259" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e-dlq" edge="1" parent="1" style="endArrow=classic;fontSize=10;edgeStyle=orthogonalEdgeStyle;rounded=0;libavoidRouting=1;orthogonalLoop=1;jettySize=auto;html=1;" target="dlq" value="失敗時">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1370" y="549" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
