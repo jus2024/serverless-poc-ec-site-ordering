@@ -1,10 +1,18 @@
-# Amplify Gen 2 業務 Web アプリテンプレート + 注文処理パイプライン PoC
+# 注文処理パイプライン PoC（DynamoDB Streams 直結の限界検証）
 
-AWS Amplify Gen 2 を中核にした業務 Web アプリケーション用のスターターテンプレートです。
-オプションで Strands Agents による AI エージェント機能を追加できます。
+**DynamoDB Streams と Lambda を直結した非同期パイプラインの限界（どこで滞留し、どこが壁になるか）を、
+実際に負荷をかけて実測する検証プロジェクト**です。題材は架空のスペシャルティコーヒー焙煎メーカー
+Kiro Roasters の D2C EC 注文処理。この検証装置は AWS Amplify Gen 2 業務 Web アプリの
+スターターテンプレートの上に載っており、テンプレート自体も副次的に再利用できます。
+オプションで Strands Agents による AI エージェント機能も追加できます（任意拡張）。
 
-このリポジトリにはテンプレートの上に、**DynamoDB Streams と Lambda を直結したときの
-限界を実測する PoC**（`order-pipeline-poc`）が載っています。次の節を参照してください。
+**主な結論:**
+
+- 仮説どおり、壁は **`S × P ÷ D`（オープンシャード数 × 並列化係数 ÷ 処理時間）** であり、
+  Lambda の同時実行枠ではありません。入力を増やしてもシャードが増えなければ消費能力は変わりません。
+- ただし式は P について線形にスケールせず、PF=10 では約 0.84 倍の補正が必要でした。
+- **過負荷は請求額や大半の DynamoDB メトリクスには現れず、検知できるのは `IteratorAge` だけ**です。
+- 詳細は下の[検証状況](#検証状況)節と [docs/poc/verification-results.md](docs/poc/verification-results.md) を参照してください。
 
 ---
 
@@ -60,6 +68,10 @@ Lambda は 1 シャードを 1 インスタンスで処理します。
 同じバズが、テーブルの成熟度によって違う壊れ方をすることを示します。
 
 ### 構成
+
+![注文処理パイプライン PoC の AWS 構成図](docs/poc/images/architecture.png)
+
+> 編集用ソース: [architecture.drawio](docs/poc/images/architecture.drawio)（draw.io で開ける）
 
 ```
 ブラウザ (OrderDashboard: 注文 / 負荷テスト / 計測結果 / 設定)
