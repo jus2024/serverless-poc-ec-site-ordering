@@ -5,29 +5,33 @@
 
 ---
 
-## ⚠️ 公開環境に置いてはならない
+## 認証について（方式 A: Cognito User Pool）
 
-**この PoC の API Gateway には認証が一切掛かっていない。**
-要件のスコープ外定義（認証・認可を扱わない）に従った結果であり、意図的な状態である
-（design §8）。
+**この PoC の API Gateway には Cognito User Pool 認証が掛かっている。**
+全ルート（CORS プリフライトの OPTIONS を除く）に Cognito オーソライザーが付き、
+`Authorization: Bearer <ID トークン>` が無いリクエストは 401 になる
+（`amplify/custom/order-api.ts`）。フロントエンド（`OrderDashboard`）は
+`<Authenticator>` 配下でログイン済みのため、API クライアント
+（`src/lib/orders/api.ts`）が ID トークンを自動で付ける。
 
-| リスク | 内容 |
-|-------|------|
-| 第三者による注文投入 | URL を知れば誰でも `POST /orders` を叩ける |
-| 第三者による負荷生成の起動 | `POST /load-test/start` も無認証。Lambda 同時実行枠と DynamoDB 書き込みを消費させられる |
-| コストの発生 | 予算枠を $100 に緩和したため、悪用時の潜在的な損害も大きい |
+> **⚠️ 既知の制約: measure が現在使用不可**
+>
+> 認証追加により、`query-impact-measure` の内部呼び出し（自分が属する API の
+> `GET /orders` を HTTPS で叩く並行計測。design 論点 3）は Cognito トークンを
+> 持たないため 401 になり、**measure（`POST /measure/start`）は一時的に使用できない**。
+> 復旧には Lambda 側での M2M トークン取得（例: Cognito のクライアント
+> クレデンシャルフローでトークンを取り、`Authorization: Bearer` を付ける）が必要である。
+> 方式 A で許容した制約であり、実処理（注文パイプライン）には影響しない。
 
 **守るべき運用:**
 
-- 検証者自身の sandbox 環境（`npx ampx sandbox`）でのみ動かす
-- API URL を共有しない。スクリーンショットや記事に貼る際はホスト名を伏せる
-- **Amplify Hosting や共有ブランチにデプロイしない**（`amplify/backend.ts` が
-  `OrderPipelinePoc` を配線しているため、Amplify Hosting に接続したブランチへ
-  マージすると、このスタックがそのブランチのバックエンドとして作られる。
-  マージする場合は事前に配線を外すか、検証専用のアカウントを使う）
+- 検証者自身の sandbox 環境（`npx ampx sandbox`）で動かすのが基本
+- 認証を掛けたとはいえ、負荷生成（`POST /load-test/start`）はログイン済みユーザーなら
+  誰でも起動でき、Lambda 同時実行枠と DynamoDB 書き込み（= 課金）を消費する。
+  User Pool のサインアップを開放したままにしない
 - 検証していない期間はスタックを削除しておく（[お片付け](#お片付けリソース削除)）
 
-緩和策としてコード側に入っているのはパラメータ上限のみである
+緩和策としてコード側に入っているのは Cognito 認証に加え、パラメータ上限である
 （投入レート・継続時間・並行数。`ORDER_MAX_*`）。API キー、IAM 認証、WAF は含まない。
 
 ---
@@ -115,24 +119,46 @@ npm run dev
 **シナリオ実行時は UI を使うほうがよい**（実行 ID と結果が `localStorage` に
 蓄積され、`計測結果` タブで横並びに比較できる。要件 14.6）。
 
-### 3. 初期在庫を投入する
+### 3. curl で叩くなら ID トークンを用意する
 
-在庫がゼロだと引当が常に失敗し、検証にならない。
+方式 A で全ルートに Cognito 認証が掛かっているため、curl から叩く場合は
+Cognito の **ID トークン**を `Authorization: Bearer` で付ける（アクセストークンではない。
+API Gateway の Cognito オーソライザーは既定で ID トークンを検証する）。
+User Pool ID / クライアント ID は `amplify_outputs.json` から取る（ハードコードしない）。
 
 ```bash
 export API=https://xxxxxxxxxx.execute-api.<region>.amazonaws.com/poc
 
-curl -X POST "$API/inventory/seed" -H 'Content-Type: application/json' -d '{}'
+# amplify_outputs.json から User Pool のクライアント ID を取り、ユーザー名/パスワードで認証する
+CLIENT_ID=$(jq -r '.auth.user_pool_client_id' amplify_outputs.json)
+export TOKEN=$(aws cognito-idp initiate-auth \
+  --auth-flow USER_PASSWORD_AUTH \
+  --client-id "$CLIENT_ID" \
+  --auth-parameters USERNAME=<検証用ユーザー>,PASSWORD=<パスワード> \
+  --query 'AuthenticationResult.IdToken' --output text)
+```
+
+`USER_PASSWORD_AUTH` は User Pool クライアントで有効化されている必要がある。
+ブラウザで `OrderDashboard` にログイン済みなら、開発者ツールから ID トークンを
+コピーして `TOKEN` に入れてもよい。以降の curl は `-H "Authorization: Bearer $TOKEN"` を付ける。
+
+### 4. 初期在庫を投入する
+
+在庫がゼロだと引当が常に失敗し、検証にならない。
+
+```bash
+curl -X POST "$API/inventory/seed" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" -d '{}'
 ```
 
 既定で商品マスタ全 SKU × `WH-TOKYO` に 10,000,000 個を投入する。
 全シナリオを通して枯渇しない量である（design 論点 6）。
 在庫不足（要件 5.3）を意図的に起こす場合は `{"initialQuantity": 1}` のように指定する。
 
-### 4. 有効な設定を確認する
+### 5. 有効な設定を確認する
 
 ```bash
-curl -s "$API/config" | jq
+curl -s "$API/config" -H "Authorization: Bearer $TOKEN" | jq
 ```
 
 **出典は `.env.local` ではなくデプロイ済みの Lambda 環境変数である。**
@@ -143,7 +169,7 @@ curl -s "$API/config" | jq
 warm throughput はこのレスポンスに含まれない（テーブル側の設定であり
 Lambda の環境変数に無い）。実行レコード側に記録される。
 
-### 5. アラームを購読する（任意だが推奨）
+### 6. アラームを購読する（任意だが推奨）
 
 SNS トピックはスタックが作るが、**サブスクリプションは作らない**
 （メールアドレスをリポジトリに含めないため）。
@@ -219,11 +245,12 @@ A5 → A6（決済遅延 3000 → 100ms）の 2 箇所だけ再デプロイが�
 
 ```bash
 # 負荷生成の開始（202 が返り、投入は非同期に継続する）
-curl -X POST "$API/load-test/start" -H 'Content-Type: application/json' \
+curl -X POST "$API/load-test/start" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" \
   -d '{"ordersPerMinute": 200, "durationSeconds": 900, "useRampCurve": false}'
 
 # 実行状態・結果の照会
-curl -s "$API/executions/<executionId>" | jq
+curl -s "$API/executions/<executionId>" -H "Authorization: Bearer $TOKEN" | jq
 ```
 
 **全シナリオで定常負荷（`useRampCurve: false`）を使う。**
@@ -267,12 +294,20 @@ A7 は投入を止めてから `IteratorAge` が 0 に戻るまでを見る。
 
 A8 は負荷生成を先に開始し、ピーク中に並行計測をぶつける。
 
+> **⚠️ measure（並行計測）は現在使用できない。** 方式 A の認証追加により、
+> `query-impact-measure` の内部呼び出し（`GET /orders` を叩く）が 401 になるため、
+> `POST /measure/start` を叩いても計測は失敗する（実処理には影響しない）。
+> 復旧には Lambda 側での M2M トークン取得が必要。A8 / B4 の並行計測はこの制約が
+> 解消されるまで保留する。下記は復旧後の手順として残す。
+
 ```bash
-LOAD_ID=$(curl -s -X POST "$API/load-test/start" -H 'Content-Type: application/json' \
+LOAD_ID=$(curl -s -X POST "$API/load-test/start" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" \
   -d '{"ordersPerMinute": 1000, "durationSeconds": 900}' | jq -r .executionId)
 
-# 数分待って処理が定常になってから
-curl -X POST "$API/measure/start" -H 'Content-Type: application/json' \
+# 数分待って処理が定常になってから（※ 現在は上記の制約により計測は失敗する）
+curl -X POST "$API/measure/start" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" \
   -d "{\"concurrency\": 60, \"durationSeconds\": 120, \"loadTestId\": \"$LOAD_ID\"}"
 ```
 
@@ -333,7 +368,7 @@ aws dynamodb update-table --table-name <注文テーブル名> --billing-mode PA
 数え落ちない。
 
 ```bash
-curl -s "$API/executions/<executionId>" | jq '{
+curl -s "$API/executions/<executionId>" -H "Authorization: Bearer $TOKEN" | jq '{
   open_shard_count, shard_count_error,
   parallelization_factor, estimated_capacity_per_minute,
   warm_throughput_write
@@ -414,7 +449,7 @@ AWS の仕様である。テーブルを作り直す以外に戻す手段がな�
 ## お片付け（リソース削除）
 
 要件 17.1。**検証していない期間はスタックを消しておく。**
-無認証 API を放置しないためでもある。
+認証は掛けたが、負荷生成でコストが発生し得る API を放置しないためでもある。
 
 ```bash
 # 1. sandbox の削除（DynamoDB 4 本、Lambda 7 本、API Gateway、DLQ、

@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import { UserPool } from 'aws-cdk-lib/aws-cognito';
 import { Code, Function as LambdaFunction, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { describe, expect, it } from 'vitest';
 import { EXECUTION_STATUS_RESOURCE } from '../functions/execution-status/routes.js';
@@ -38,7 +39,10 @@ function synth() {
     queryImpactMeasure: handler('QueryImpactMeasure'),
     executionStatus: handler('ExecutionStatus'),
   };
-  const api = new OrderApi(stack, 'OrderApi', { handlers });
+  // 方式 A: 全ルートに Cognito 認証を掛けるため User Pool を渡す。
+  // `backend.ts` は `backend.auth.resources.userPool` を渡す（ここでは代役）
+  const userPool = new UserPool(stack, 'UserPool');
+  const api = new OrderApi(stack, 'OrderApi', { handlers, userPool });
 
   return { stack, api, handlers, template: Template.fromStack(stack) };
 }
@@ -274,13 +278,65 @@ describe('OrderApi: Lambda へ渡すベース URL（design 論点 3）', () => {
   });
 });
 
-describe('OrderApi: 認証（design §8）', () => {
-  it('認証を掛けていない（スコープ外。公開環境に常設してはならない）', () => {
+describe('OrderApi: 認証（方式 A: Cognito User Pool）', () => {
+  it('Cognito User Pool オーソライザーを 1 つ作る', () => {
+    synthed.template.resourceCountIs('AWS::ApiGateway::Authorizer', 1);
+    synthed.template.hasResourceProperties('AWS::ApiGateway::Authorizer', {
+      Type: 'COGNITO_USER_POOLS',
+    });
+  });
+
+  it('非 OPTIONS の全メソッドに Cognito 認証（COGNITO_USER_POOLS + AuthorizerId）が掛かる', () => {
     for (const [logicalId, method] of Object.entries(
       synthed.template.findResources('AWS::ApiGateway::Method')
     )) {
-      expect(method.Properties.AuthorizationType, logicalId).toBe('NONE');
-      expect(method.Properties.ApiKeyRequired ?? false, logicalId).toBe(false);
+      if (method.Properties.HttpMethod === 'OPTIONS') {
+        continue;
+      }
+      expect(method.Properties.AuthorizationType, logicalId).toBe('COGNITO_USER_POOLS');
+      // オーソライザーへの参照を持つこと（Ref: <Authorizer>）
+      expect(method.Properties.AuthorizerId, logicalId).toBeDefined();
     }
+  });
+
+  it('OPTIONS（CORS プリフライト）には認証を掛けない（ブラウザは Authorization を付けない）', () => {
+    const options = Object.entries(
+      synthed.template.findResources('AWS::ApiGateway::Method')
+    ).filter(([, method]) => method.Properties.HttpMethod === 'OPTIONS');
+
+    // プリフライトが 1 つ以上あること（全リソースに OPTIONS を張っている）
+    expect(options.length).toBeGreaterThan(0);
+    for (const [logicalId, method] of options) {
+      expect(method.Properties.AuthorizationType, logicalId).toBe('NONE');
+      expect(method.Properties.AuthorizerId, logicalId).toBeUndefined();
+    }
+  });
+
+  it('userPool を省略すると認証なし（NONE）にフォールバックする', () => {
+    const stack = new Stack(testApp(), 'amplify-poc-fallback-3333');
+    const handler = new LambdaFunction(stack, 'Handler', {
+      runtime: Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: Code.fromInline('exports.handler = async () => ({});'),
+    });
+    const api = new OrderApi(stack, 'OrderApi', {
+      handlers: {
+        orderAccept: handler,
+        orderQuery: handler,
+        inventorySeed: handler,
+        loadGenerator: handler,
+        queryImpactMeasure: handler,
+        executionStatus: handler,
+      },
+    });
+    const template = Template.fromStack(stack);
+
+    template.resourceCountIs('AWS::ApiGateway::Authorizer', 0);
+    for (const [logicalId, method] of Object.entries(
+      template.findResources('AWS::ApiGateway::Method')
+    )) {
+      expect(method.Properties.AuthorizationType, logicalId).toBe('NONE');
+    }
+    expect(api.url).toBeTruthy();
   });
 });

@@ -20,13 +20,18 @@ import {
   OrderApiNetworkError,
   OrderApiRequestError,
   ORDER_API_BASE_URL_ENV,
+  resetIdTokenProvider,
   resolveOrderApiBaseUrl,
   seedInventory,
+  setIdTokenProvider,
   startLoadTest,
   startQueryImpact,
 } from "./api";
 
 const BASE_URL = "https://example.execute-api.us-west-2.amazonaws.com";
+
+/** テスト用の固定 ID トークン。方式 A で全リクエストに付く */
+const ID_TOKEN = "test-id-token";
 
 /** 成功応答のスタブ */
 function jsonResponse(body: unknown, status = 200): Response {
@@ -51,12 +56,16 @@ function firstCall(mock: ReturnType<typeof stubFetch>): [string, RequestInit] {
 
 beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_ORDER_API_URL", BASE_URL);
+  // 既定の取得方法は `aws-amplify/auth` の `fetchAuthSession()` を呼ぶため、
+  // Amplify 未設定のテスト環境では例外になる。固定トークンを返す関数に差し替える
+  setIdTokenProvider(() => Promise.resolve(ID_TOKEN));
 });
 
 afterEach(() => {
   vi.unstubAllEnvs();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
+  resetIdTokenProvider();
 });
 
 describe("resolveOrderApiBaseUrl", () => {
@@ -256,7 +265,7 @@ describe("リクエスト本文", () => {
     await createOrder({ customerId: "test-0001", items: [{ sku: "ITEM#A", qty: 2, price: 100 }] });
 
     const [, init] = firstCall(mock);
-    expect(init.headers).toEqual({ "Content-Type": "application/json" });
+    expect(init.headers).toMatchObject({ "Content-Type": "application/json" });
     expect(JSON.parse(init.body as string)).toEqual({
       customerId: "test-0001",
       items: [{ sku: "ITEM#A", qty: 2, price: 100 }],
@@ -279,6 +288,41 @@ describe("リクエスト本文", () => {
 
     const [, init] = firstCall(mock);
     expect(init.body).toBeUndefined();
+  });
+});
+
+describe("認証ヘッダー（方式 A: Cognito ID トークン）", () => {
+  it("GET に Authorization: Bearer <idToken> を付ける", async () => {
+    const mock = stubFetch(jsonResponse({}));
+
+    await getCatalog();
+
+    const [, init] = firstCall(mock);
+    expect(init.headers).toMatchObject({ Authorization: `Bearer ${ID_TOKEN}` });
+  });
+
+  it("POST は Content-Type と Authorization の両方を送る", async () => {
+    const mock = stubFetch(jsonResponse({}, 201));
+
+    await createOrder();
+
+    const [, init] = firstCall(mock);
+    expect(init.headers).toMatchObject({
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${ID_TOKEN}`,
+    });
+  });
+
+  it("トークンが取得できない場合は Authorization を付けずに送る（API Gateway 側で 401）", async () => {
+    setIdTokenProvider(() => Promise.resolve(null));
+    const mock = stubFetch(jsonResponse({}));
+
+    await getCatalog();
+
+    const [, init] = firstCall(mock);
+    // ヘッダーが無い、または Authorization を含まないこと
+    const headers = (init.headers ?? {}) as Record<string, string>;
+    expect(headers.Authorization).toBeUndefined();
   });
 });
 

@@ -25,7 +25,9 @@ import type { ErrorResponse } from './types.js';
 /** 全応答に付けるヘッダー（design §E-1「全応答に CORS ヘッダーを付ける」） */
 export const CORS_HEADERS: Readonly<Record<string, string>> = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
+  // `Authorization` は Cognito 認証（方式 A）で全リクエストに付く。
+  // プリフライトの許可内容（`order-api.ts` の `ORDER_API_CORS.allowHeaders`）と揃える
+  'Access-Control-Allow-Headers': 'Content-Type,Authorization',
   'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
 } as const;
 
