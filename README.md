@@ -113,25 +113,35 @@ npm run dev
 `http://localhost:3000` が検証操作 UI です。続けて初期在庫を投入し、
 有効な検証パラメータを確認します。
 
-```bash
-export API=<custom.orderApiUrl>
+**画面から操作するのが基本です。** `http://localhost:3000` にログイン（`<Authenticator>`
+配下のため、初回はサインアップ／サインイン）したうえで、**「設定」タブ**を開きます。
+「初期在庫の投入」で在庫を投入し（入力欄は空のままで既定の 10,000,000 個 × 全 240 SKU が入ります）、
+同じ設定タブで有効な検証パラメータ（`GET /config` 相当）も確認できます。
+画面操作なら Cognito トークンが自動で付くため、認証を意識せず投入できます。
 
-curl -X POST "$API/inventory/seed" -H 'Content-Type: application/json' -d '{}'
-curl -s "$API/config" | jq
-```
+curl から叩きたい場合は Cognito 認証（`Authorization: Bearer <ID トークン>`）が必要です。
+ID トークンの取得を含む手順は [docs/poc/verification-guide.md](docs/poc/verification-guide.md) にあります。
 
 `GET /config` の出典は `.env.local` ではなく**デプロイ済みの Lambda 環境変数**です。
 計測条件の取り違えを防ぐため、シナリオ実行の直前に必ず確認してください。
 
 ### シナリオの実行
 
+**負荷生成と結果照会は画面から行うのが基本です。** 「負荷テスト」タブで負荷生成を開始し、
+「計測結果」タブで結果を照会します。実行 ID が `localStorage` に蓄積され、計測結果タブで
+横並びに比較できます。画面操作なら Cognito トークンが自動で付きます。
+
+curl から叩く場合は Cognito 認証が必要で、ID トークン（`$TOKEN`）の取得を含む手順は
+[docs/poc/verification-guide.md](docs/poc/verification-guide.md) にあります。
+
 ```bash
-# 負荷生成の開始（202 が返り、投入は非同期に継続する）
-curl -X POST "$API/load-test/start" -H 'Content-Type: application/json' \
+# 負荷生成の開始（202 が返り、投入は非同期に継続する）。$TOKEN の取得は verification-guide 参照
+curl -X POST "$API/load-test/start" \
+  -H 'Content-Type: application/json' -H "Authorization: Bearer $TOKEN" \
   -d '{"ordersPerMinute": 1000, "durationSeconds": 900, "useRampCurve": false}'
 
 # 結果の照会（シャード数・実測投入レート・算出した消費能力を含む）
-curl -s "$API/executions/<executionId>" | jq
+curl -s "$API/executions/<executionId>" -H "Authorization: Bearer $TOKEN" | jq
 ```
 
 **設定の変え方は 2 系統あります。**
