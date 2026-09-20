@@ -13,6 +13,18 @@
  *                           継続時間に達したら COMPLETED（実測レートを記録。要件 11.11）
  * ```
  *
+ * ## 末尾の端数取りこぼし修正（`planBackfill`）
+ *
+ * FINISH（継続時間到達）はループ先頭で判定され、従来はその刻みで投入せずに
+ * `completeExecution` していた。このため「継続時間ちょうどの最後の刻みで
+ * 投入されるはずだった端数」が落ち、低レートほど割合が大きくなっていた
+ * （2 件/分 × 60 秒 で実測が目標の半分）。最終世代の FINISH では
+ * `completeExecution` の前に `planBackfill` で「理論総数 − これまでの計画総数
+ * （`plannedTotal`）」をまとめて投入する。差が負なら 0 なので過剰投入せず、
+ * 大量・長時間の実行では `plannedTotal` がほぼ理論総数に一致するため
+ * 補填は 0〜1 件に収まり、既存の実測結果に実質影響しない。`plannedTotal` は
+ * `carry` と同様に世代を跨いで引き継ぐ（`worker-event.ts`）。
+ *
  * 開始 API が即座に応答するのは API Gateway の統合タイムアウト（上限 29 秒）を
  * 超える継続時間に対応するためである（要件 11.9）。判別は `isLoadWorkerEvent`。
  *
@@ -59,6 +71,7 @@ import {
   PROGRESS_FLUSH_INTERVAL_MS,
   TICK_INTERVAL_MS,
   evaluateRate,
+  planBackfill,
   planTick,
   resolveTickAction,
 } from './load-plan.js';
@@ -190,6 +203,9 @@ async function runWorker(event: LoadWorkerEvent, context: Context): Promise<void
   let submittedCount = event.submittedCount;
   let submitErrorCount = event.submitErrorCount;
   let carry = event.carry;
+  // この実行全体で計画（投入試行）した件数の累計。FINISH の補填で
+  // 「理論総数 − plannedTotal」を求めるために carry と同様に世代を跨いで持ち回る
+  let plannedTotal = event.plannedTotal;
   // 実行レコードのテーブル名を先に解決する。これが解決できない失敗だけは
   // `FAILED` を記録できず、CloudWatch のエラーログにしか現れない
   let executionsTable: string | undefined;
@@ -213,6 +229,27 @@ async function runWorker(event: LoadWorkerEvent, context: Context): Promise<void
       });
 
       if (action === 'FINISH') {
+        // 理論総数と実計画数（plannedTotal）の差を最後にまとめて投入する。
+        // 差が負なら 0 なので過剰投入しない（planBackfill の注記）。
+        // HANDOFF 経路は plannedTotal を次世代へ引き継ぐため、補填は最終世代の
+        // FINISH でのみ起き、二重投入にはならない。
+        const backfill = planBackfill({
+          targetOrdersPerMinute: params.ordersPerMinute,
+          durationSeconds: params.durationSeconds,
+          useRampCurve: params.useRampCurve,
+          plannedTotal,
+        });
+        if (backfill.orders > 0) {
+          const result = await submitOrders({
+            ordersTable,
+            count: backfill.orders,
+            loadTestId: event.executionId,
+            dataTtlDays: verification.dataTtlDays,
+          });
+          submittedCount += result.submittedCount;
+          submitErrorCount += result.submitErrorCount;
+        }
+
         await completeExecution({
           executionsTable,
           event,
@@ -230,13 +267,15 @@ async function runWorker(event: LoadWorkerEvent, context: Context): Promise<void
           submittedCount,
           submitErrorCount,
           carry,
+          plannedTotal,
         });
         return;
       }
 
+      const tickElapsedMs = tickStartedAtMs - event.startedAtMs;
       const plan = planTick({
         targetOrdersPerMinute: params.ordersPerMinute,
-        elapsedMs: tickStartedAtMs - event.startedAtMs,
+        elapsedMs: tickElapsedMs,
         durationSeconds: params.durationSeconds,
         useRampCurve: params.useRampCurve,
         carry,
@@ -244,6 +283,9 @@ async function runWorker(event: LoadWorkerEvent, context: Context): Promise<void
       });
       carry = plan.carry;
       lastTickAtMs = tickStartedAtMs;
+      // 計画した件数をこの実行全体の累計に足す（FINISH の補填基準）。
+      // 書き込みの成否によらず「計画した数」を数える（planBackfill の注記）
+      plannedTotal += plan.orders;
 
       if (plan.orders > 0) {
         const result = await submitOrders({
@@ -346,6 +388,7 @@ async function handOffToNextGeneration(input: {
   submittedCount: number;
   submitErrorCount: number;
   carry: number;
+  plannedTotal: number;
 }): Promise<void> {
   const { event } = input;
 
@@ -366,6 +409,7 @@ async function handOffToNextGeneration(input: {
     submittedCount: input.submittedCount,
     submitErrorCount: input.submitErrorCount,
     carry: input.carry,
+    plannedTotal: input.plannedTotal,
   });
   await invokeSelfAsync({ payload: next });
 

@@ -194,6 +194,83 @@ export function planTick(input: PlanTickInput): TickPlan {
   return { orders, carry: Math.max(0, exact - orders), factor };
 }
 
+export interface PlanBackfillInput {
+  /** 目標投入レート（件/分。カーブ実行ではピーク値） */
+  targetOrdersPerMinute: number;
+  /** 実行の継続時間（秒） */
+  durationSeconds: number;
+  /** 負荷カーブを使うか（要件 11.2 / 11.3） */
+  useRampCurve: boolean;
+  /** この実行全体でこれまでに計画（投入試行）した件数の累計（世代を跨いで累積する） */
+  plannedTotal: number;
+}
+
+export interface BackfillPlan {
+  /** FINISH 時に最後にまとめて投入する補填件数（0 以上） */
+  orders: number;
+}
+
+/**
+ * この実行で投入されるべき理論総数を返す。
+ *
+ * - 定常負荷（`useRampCurve=false`）: `floor(rate * duration / 60)`。
+ *   2 件/分 × 60 秒 = 2、60 件/分 × 60 秒 = 60、2000 件/分 × 60 秒 = 2000。
+ * - カーブ（`useRampCurve=true`）: 各刻みの係数を積分する代わりに、
+ *   評価と同じ平均係数（`AVERAGE_RAMP_FACTOR` = 0.7）を掛けた
+ *   `floor(rate * duration / 60 * 0.7)` で近似する。`evaluateRate` の
+ *   期待レート（`expectedOrdersPerMinute`）と同じ根拠なので整合する。
+ *
+ * `FLOOR_EPSILON` を足すのは二進小数の切り捨て境界を跨がせるため（`planTick` と同じ）。
+ */
+export function theoreticalTotalOrders(input: {
+  targetOrdersPerMinute: number;
+  durationSeconds: number;
+  useRampCurve: boolean;
+}): number {
+  const peakTotal = (input.targetOrdersPerMinute * input.durationSeconds) / 60;
+  const total = input.useRampCurve ? peakTotal * AVERAGE_RAMP_FACTOR : peakTotal;
+  return Math.floor(total + FLOOR_EPSILON);
+}
+
+/**
+ * FINISH 時に「理論総数と実計画数の差」をまとめて確定する（末尾の取りこぼし修正）。
+ *
+ * ## なぜ理論総数ベースなのか（末尾 1 刻みでは足りない）
+ *
+ * ワーカーは 1 秒刻みで投入し、端数を `carry` に繰り越す。FINISH（継続時間到達）は
+ * ループ先頭で判定されるため、継続時間ちょうどの最後の刻みで確定するはずだった
+ * 投入が落ちる。前回は「末尾の 1 刻み分（`tickMs = durationMs − 直前の elapsedMs`、
+ * 通常数百 ms）＋残 carry」だけを埋め戻したが、**末尾 1 刻みの端数では carry が
+ * 1.0 に届かず 0 件のまま**で、実機で 2 件/分 × 60 秒 が依然 1 件だった
+ * （CloudWatch で `submittedCount:1` を確認済み）。そこで末尾 1 刻みではなく、
+ * この実行全体の**理論総数と実計画数の帳尻**を合わせる。
+ *
+ * ## 過剰投入しない仕組み
+ *
+ * 補填件数は `max(0, 理論総数 − plannedTotal)`。差が負（既に理論総数以上を
+ * 計画済み）なら 0 を返すため、総投入数が理論総数を超えることはない。
+ *
+ * ## 基準を submittedCount ではなく plannedTotal にする理由
+ *
+ * 補填は「計画どおり投入する」のが目的であって、書き込みエラーの穴埋めではない。
+ * そのため基準は「これまで `planTick` が計画した件数の累計（`plannedTotal`）」とし、
+ * 書き込みに失敗した分（`submitErrorCount`）を埋め直したりはしない。
+ *
+ * ## 大量・長時間の実行に影響しない理由
+ *
+ * 大量・長時間では `plannedTotal` が刻みの積み上げでほぼ理論総数に一致するため、
+ * 補填は 0〜1 件に収まり、既存の実測結果（`docs/poc/verification-results.md`）は
+ * 変わらない。効くのは低レート（端数が 1 件に満たないまま実行が終わる）だけである。
+ */
+export function planBackfill(input: PlanBackfillInput): BackfillPlan {
+  const theoretical = theoreticalTotalOrders({
+    targetOrdersPerMinute: input.targetOrdersPerMinute,
+    durationSeconds: input.durationSeconds,
+    useRampCurve: input.useRampCurve,
+  });
+  return { orders: Math.max(0, theoretical - input.plannedTotal) };
+}
+
 export interface RateEvaluationInput {
   /** 目標投入レート（件/分。カーブ実行ではピーク値） */
   targetOrdersPerMinute: number;

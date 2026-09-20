@@ -42,6 +42,7 @@ describe('buildFirstWorkerEvent', () => {
       submittedCount: 0,
       submitErrorCount: 0,
       carry: 0,
+      plannedTotal: 0,
       generation: 1,
     });
   });
@@ -52,6 +53,7 @@ describe('buildNextWorkerEvent（要件 11.9）', () => {
     submittedCount: 12_345,
     submitErrorCount: 7,
     carry: 0.4,
+    plannedTotal: 12_352,
   });
 
   it('世代を 1 つ進める', () => {
@@ -67,10 +69,11 @@ describe('buildNextWorkerEvent（要件 11.9）', () => {
     expect(next.params).toEqual(PARAMS);
   });
 
-  it('累積した投入件数と端数を引き継ぐ', () => {
+  it('累積した投入件数と端数と計画総数を引き継ぐ', () => {
     expect(next.submittedCount).toBe(12_345);
     expect(next.submitErrorCount).toBe(7);
     expect(next.carry).toBe(0.4);
+    expect(next.plannedTotal).toBe(12_352);
   });
 
   it('元のペイロードを変更しない', () => {
@@ -118,6 +121,7 @@ describe('isLoadWorkerEvent', () => {
     ['params が無い', { ...FIRST, params: undefined }],
     ['params が欠けている', { ...FIRST, params: { ordersPerMinute: 100 } }],
     ['起点時刻が文字列', { ...FIRST, startedAtMs: '1700000000000' }],
+    ['計画総数が無い', { ...FIRST, plannedTotal: undefined }],
     ['世代が無い', { ...FIRST, generation: undefined }],
     ['null', null],
     ['配列', []],
