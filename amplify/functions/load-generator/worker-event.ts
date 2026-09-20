@@ -46,6 +46,15 @@ export interface LoadWorkerEvent {
   submitErrorCount: number;
   /** 刻みの端数の繰り越し（低レートでの取りこぼしを防ぐ。`planTick` の注記） */
   carry: number;
+  /**
+   * この実行全体でこれまでに計画（投入試行）した件数の累計。
+   *
+   * FINISH（最終世代）で「理論総数 − plannedTotal」を補填するために、
+   * carry と同様に世代を跨いで引き継ぐ。世代ごとの計画数しか持たないと、
+   * 最終世代が実行全体の計画総数を知らず、理論総数との差を誤って過剰投入する
+   * （`planBackfill` の注記）。
+   */
+  plannedTotal: number;
   /** 世代数（1 が最初のワーカー）。`MAX_WORKER_GENERATIONS` で打ち切る */
   generation: number;
 }
@@ -64,6 +73,7 @@ export function buildFirstWorkerEvent(input: {
     submittedCount: 0,
     submitErrorCount: 0,
     carry: 0,
+    plannedTotal: 0,
     generation: 1,
   };
 }
@@ -71,13 +81,19 @@ export function buildFirstWorkerEvent(input: {
 /** 引き継ぎ先のペイロードを組み立てる（世代を 1 つ進める） */
 export function buildNextWorkerEvent(
   event: LoadWorkerEvent,
-  state: { submittedCount: number; submitErrorCount: number; carry: number }
+  state: {
+    submittedCount: number;
+    submitErrorCount: number;
+    carry: number;
+    plannedTotal: number;
+  }
 ): LoadWorkerEvent {
   return {
     ...event,
     submittedCount: state.submittedCount,
     submitErrorCount: state.submitErrorCount,
     carry: state.carry,
+    plannedTotal: state.plannedTotal,
     generation: event.generation + 1,
   };
 }
@@ -116,6 +132,7 @@ export function isLoadWorkerEvent(event: unknown): event is LoadWorkerEvent {
     typeof candidate.submittedCount === 'number' &&
     typeof candidate.submitErrorCount === 'number' &&
     typeof candidate.carry === 'number' &&
+    typeof candidate.plannedTotal === 'number' &&
     typeof candidate.generation === 'number' &&
     isLoadTestParams(candidate.params)
   );
