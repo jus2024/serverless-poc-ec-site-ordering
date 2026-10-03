@@ -55,3 +55,11 @@ notes/
 # Legacy (Starter Toolkit)
 agents/.bedrock_agentcore.yaml
 agents/.bedrock_agentcore/
+# Throwaway verification scratch (shard probe の作業ログ・手元の試行)
+tmp/
+
+# shard-autoscale-probe ツールキットのビルド成果物・実行ログ（スクリプトはコミット、成果物は除外）
+docs/poc/shard-autoscale-probe/consumer.zip
+docs/poc/shard-autoscale-probe/logs/
+docs/poc/shard-autoscale-probe/.stream_arn
+docs/poc/shard-autoscale-probe/.esm_uuid

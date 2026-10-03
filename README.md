@@ -192,6 +192,36 @@ S=4 で 42,814 件の滞留を積んだ 2,000 件/分 と同じ負荷が、S=64 
 Cost Explorer の実績値は反映待ち（24〜48 時間）です。予算枠は $100。
 検証していない期間は `npx ampx sandbox delete` でスタックを削除してください。
 
+### 追加検証: シャード自動拡張プローブ（S の成長・同時実行の天井・滞留）
+
+DynamoDB Streams のオープンシャード数 S・Lambda 同時実行・IteratorAge（滞留）の関係を、
+使い捨ての最小スタック（テーブル + sleep Lambda + ESM）で実測した一連の追加検証（E1〜E11）です。
+PoC 本体（`amplify/` `src/` `agents/`）には触れません。
+
+- 再現用ツールキット: [docs/poc/shard-autoscale-probe/](docs/poc/shard-autoscale-probe/)（`README.md` に手順と各スクリプトの対応）
+- 実測結果: [docs/poc/shard-autoscale-probe-results.md](docs/poc/shard-autoscale-probe-results.md)（E1〜E11・全体サマリ付き）
+- 背景（E1〜E6）: [docs/poc/shard-warm-throughput-experiment.md](docs/poc/shard-warm-throughput-experiment.md)
+
+**主な結論:**
+
+- **S は warm throughput で決定論的に決まる**（負荷ピークでも warm を後天的に latch して同じ値に収束。
+  負荷・データ量・項目サイズは S に寄与しない）。
+- **同時実行の実力は「滞留ゼロなら ~S×P、滞留があると少数の同時消費シャード系列 × P で頭打ち」**。
+  律速は S の作り方（warm-set か負荷育成か）ではなく **「滞留の有無＝親シャードが消化済みか」**。
+- 元検証の計算値「S=64 → 640 多重」は、warm-set・滞留ゼロで **~595〜603 ≈ S×P を実測**して裏付けた。
+- 消化が追いつく緩やかな負荷なら IteratorAge は秒オーダーで安定し業務が回る。
+
+```bash
+# リポジトリルートから実行（.mjs が root の node_modules を使うため）
+bash docs/poc/shard-autoscale-probe/create.sh    # 1. 作成（テーブル+Lambda+IAM+ESM、consumer.zip 自動ビルド）
+bash docs/poc/shard-autoscale-probe/run-e9.sh     # 2. 実験を実行（★従量課金。実験一覧はツールキット README）
+bash docs/poc/shard-autoscale-probe/teardown.sh   # 3. お片付け（課金停止・残存ゼロ確認）
+```
+
+> **run 系は DynamoDB 書き込みの従量課金が発生します（概算 $1〜10／実験による）。
+> warm 引き上げは不可逆なので、終了後は必ず `teardown.sh` でテーブルを削除してください。**
+> リージョンは既定 `us-west-2`、環境変数 `REGION` で上書き可。アカウント ID は実行時に資格情報から取得します。
+
 ---
 
 ## 技術スタック
