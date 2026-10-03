@@ -198,7 +198,7 @@ design §2.4 のすべての式の入力が狂う。
 |------|-----|
 | 実行日 | 2026-08-29 |
 | リージョン | `us-west-2` |
-| アカウント | `992382598974` |
+| アカウント | `<ACCOUNT_ID>` |
 | コミット（`git rev-parse --short HEAD`） | `08a51d9`（**作業ツリーは dirty。タスク 14 の記録作業自体は未コミット**） |
 | スタック名 | `npx ampx sandbox` のサンドボックススタック（スタック名は未記録。後続処理関数は `kiro-order-processor-2fe83132`） |
 | Lambda 同時実行枠（アカウント） | **上限 1,000 / 未予約 1,000**（A8 の直前に `GetAccountSettings` で実測。予約済み同時実行はゼロなので**未予約プールは上限と同一**）。design §2.6 の前提（枠 1,000）は正しい |
@@ -258,7 +258,7 @@ design §13 の 8 項目。**#2（実処理時間 D）と #6（負荷生成の�
 オーバーヘッドが乗る。**D が想定より 20% 大きいと消費能力は 20% 下がり、
 壁の位置がずれる。**
 
-**計測条件:** `us-west-2` / アカウント `992382598974` / `kiro-order-processor-2fe83132` /
+**計測条件:** `us-west-2` / アカウント `<ACCOUNT_ID>` / `kiro-order-processor-2fe83132` /
 `BatchSize = 1` / `ParallelizationFactor = 1` / 擬似待機 決済 3,000ms + 通知 500ms /
 warm throughput 未設定（`PAY_PER_REQUEST`、既定 write 4,000 / read 12,000 units/s） /
 2026-08-29 / 30 件を 16 秒かけて逐次投入。
@@ -324,7 +324,7 @@ D を約 400ms 過大に見せるため採用していない。
 （要件 11.7、design §13 #6）。合否だけでなく天井の位置を知るため、
 目標を段階的に上げて実測した。
 
-**計測条件:** `us-west-2` / アカウント `992382598974` / `kiro-load-generator-2fe83132`
+**計測条件:** `us-west-2` / アカウント `<ACCOUNT_ID>` / `kiro-load-generator-2fe83132`
 （メモリ 1,024MB / タイムアウト 900 秒） / 定常負荷（`useRampCurve: false`） /
 `ParallelizationFactor = 10`（下記「残したデプロイ設定」） /
 注文テーブルは warm throughput 未設定（`PAY_PER_REQUEST`、既定 write 4,000 units/s） /

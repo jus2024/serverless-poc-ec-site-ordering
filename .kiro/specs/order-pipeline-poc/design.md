@@ -181,7 +181,7 @@ Lambda は 1 つのオープンシャードを 1 つの関数インスタンス�
 | 項目 | 値 |
 |------|-----|
 | 実行日 | 2026-08-29 |
-| 環境 | サンドボックス `us-west-2` / アカウント `992382598974` |
+| 環境 | サンドボックス `us-west-2` / アカウント `<ACCOUNT_ID>` |
 | 関数 | `kiro-order-processor-2fe83132` |
 | ESM | `BatchSize = 1` / `ParallelizationFactor = 1` |
 | 擬似待機 | 決済 3,000ms + 通知 500ms = 3,500ms |
